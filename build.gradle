@@ -1,0 +1,67 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.jaramgroupware'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2021.0.3")
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    implementation 'com.h2database:h2'
+    implementation 'org.testng:testng:7.1.0'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
+    implementation 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.springframework.security:spring-security-test"
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.session:spring-session-jdbc'
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.springframework.data:spring-data-commons:2.7.1'
+    implementation 'org.slf4j:jcl-over-slf4j:1.7.36'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
+    implementation 'com.google.firebase:firebase-admin:9.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.7.1'
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat:2.7.1'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

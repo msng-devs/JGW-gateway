@@ -1,0 +1,54 @@
+package com.jaramgroupware.jaramgateway.dto.member;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.jaramgroupware.jaramgateway.domain.major.Major;
+import com.jaramgroupware.jaramgateway.domain.member.Member;
+import com.jaramgroupware.jaramgateway.domain.rank.Rank;
+import com.jaramgroupware.jaramgateway.domain.role.Role;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
+@ToString
+@Getter
+@NoArgsConstructor
+public class MemberDetailDto {
+
+    private String id;
+    private String email;
+    private String name;
+    private String phoneNumber;
+    private String studentID;
+    private Major major;
+    private Rank rank;
+    private Role role;
+    private Integer year;
+
+    @Builder
+    public MemberDetailDto(String id, String email, String name, String phoneNumber, String studentID, Major major, Rank rank, Role role, Integer year) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.studentID = studentID;
+        this.major = major;
+        this.rank = rank;
+        this.role = role;
+        this.year = year;
+    }
+
+    public MemberDetailDto(Member member) {
+        this.id = member.getId();
+        this.email = member.getEmail();
+        this.name = member.getName();
+        this.phoneNumber = member.getPhoneNumber();
+        this.studentID = member.getStudentID();
+        this.major = member.getMajor();
+        this.rank = member.getRank();
+        this.role = member.getRole();
+        this.year = member.getYear();
+    }
+}
