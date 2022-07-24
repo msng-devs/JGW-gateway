@@ -8,6 +8,9 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Spring cloud Gateway Config 클래스. RouteLocatorImpl를 통해 route를 등록
+ */
 @Configuration
 public class GatewayConfig {
     @Bean

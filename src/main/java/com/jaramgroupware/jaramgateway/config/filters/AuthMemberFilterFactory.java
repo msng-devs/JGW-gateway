@@ -22,10 +22,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * JGW-gateway 에서 인증 및 인가 부분을 담당하는 필터
+ * JGW-gateway 인가 부분을 담당하는 필터
  *
- * ref:
- * spring+firebase token validation https://velog.io/@couchcoding/Firebase%EB%A1%9C-Google-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0-Spring-%ED%8C%8C%ED%8A%B8
  *
  */
 @Component
@@ -37,6 +35,12 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * AuthMemberFilter의 설정 클래스.
+     *
+     * role = 해당 path에 접근할 수 있는 최소 role
+     * isAddUserInfo = request의 body에 member를 추가할껀지 여부
+     */
     @Getter
     @Setter
     @Validated
@@ -55,7 +59,12 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return new Config();
     }
 
-
+    /**
+     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
+     * @param exchange ServerWebExchange
+     * @param message 로그에 남길 메시지
+     * @return
+     */
     public Mono<Void> unauthorizedMessage(ServerWebExchange exchange,String message){
         logger.info("{}",message);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -63,6 +72,17 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
     }
 
 
+    /**
+     * AuthMemberFilter의 기능을 구현한 클래스,
+     *
+     * AuthMemberFilter는 아래와 같이 동작함.
+     *
+     * 1. header의 사용자 uid로 member table에서 해당 멤버를 조회, 만약 발견이 되지 않으면 인증오류 발생
+     * 2. 해당 member의 role을 조회하여 설정의 권한에 적절하지 않은 role이라면 인증오류 발생
+     *
+     * @param config
+     * @return
+     */
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {

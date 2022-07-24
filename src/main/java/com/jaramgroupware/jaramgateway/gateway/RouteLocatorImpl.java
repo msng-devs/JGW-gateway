@@ -16,13 +16,14 @@ import reactor.core.publisher.Flux;
 
 
 /**
+ * APIRoute 테이블에 있는 route들을 자동으로 등록하는 클래스
  * ref:https://medium.com/bliblidotcom-techblog/spring-cloud-gateway-dynamic-routes-from-database-dc938c6665de
  */
 @RequiredArgsConstructor
 public class RouteLocatorImpl implements RouteLocator {
 
     @Autowired
-    private final ApiRouteService routeService;
+    private final ApiRouteService apiRouteService;
 
     @Autowired
     private final RouteLocatorBuilder routeLocatorBuilder;
@@ -31,10 +32,14 @@ public class RouteLocatorImpl implements RouteLocator {
     private final AuthMemberFilterFactory authMemberFilterFactory;
 
 
+    /**
+     * 모든 route를 가져와서 등록
+     * @return
+     */
     @Override
     public Flux<Route> getRoutes() {
         RouteLocatorBuilder.Builder routesBuilder = routeLocatorBuilder.routes();
-        return routeService.findAllRoute()
+        return apiRouteService.findAllRoute()
                 .map(route -> routesBuilder.route(String.valueOf(route.getId()),
                         predicateSpec -> setPredicateSpec(route, predicateSpec)))
                 .collectList()
@@ -42,6 +47,12 @@ public class RouteLocatorImpl implements RouteLocator {
                         .getRoutes());
     }
 
+    /**
+     * 해당 route의 설정을 확인하여 적절한 Path, Predicate와 filter를 등록하는 클래스
+     * @param route
+     * @param predicateSpec
+     * @return
+     */
     private Buildable<Route> setPredicateSpec(ApiRoute route, PredicateSpec predicateSpec) {
 
         BooleanSpec booleanSpec = predicateSpec.path(route.getPath());

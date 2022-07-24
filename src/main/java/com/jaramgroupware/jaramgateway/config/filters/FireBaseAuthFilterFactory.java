@@ -37,6 +37,10 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
+    /**
+     * FireBaseAuthFilter의 설정 클래스.
+     * FireBaseAuthFilter는 별도의 설정이 없음.
+     */
     public static class Config {
     }
 
@@ -46,13 +50,31 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
         return new Config();
     }
 
-    public Mono<Void> unauthorizedMessage(ServerWebExchange exchange){
-
+    /**
+     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
+     * @param exchange ServerWebExchange
+     * @param message 로그에 남길 메시지
+     * @return
+     */
+    public Mono<Void> unauthorizedMessage(ServerWebExchange exchange,String message){
+        logger.info("{}",message);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         return exchange.getResponse().setComplete();
     }
 
 
+    /**
+     * FireBaseAuthFilter 구현 클래스
+     * FireBaseAuthFilter는 아래와 같은 순서로 동작함.
+     *
+     * 1. header의 token을 가져옴 만약 token이 없다면, 인증 오류를 리턴함
+     * 2. 해당 토큰을 firebase admin sdk를 사용하여 인증 만약 인증에 실패하면, 인증 오류를 리턴함
+     *
+     * 이후에 header에 user uid를 추가함.
+     *
+     * @param config FireBaseAuthFilter의 설정 파일
+     * @return
+     */
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
@@ -62,8 +84,7 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
 
             //if request has no firebase token, reject this request
             if (!request.getHeaders().containsKey("token")) {
-                logger.info("SECURITY_NO_TOKEN || it has no token in header.  (request={})", request.getURI());
-                return unauthorizedMessage(exchange);
+                return unauthorizedMessage(exchange,"SECURITY_NO_TOKEN || it has no token in header.  (request="+request.getURI()+")");
             }
 
             List<String> token = request.getHeaders().get("token");
@@ -74,8 +95,7 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
             try {
                 decodedToken = firebaseAuth.verifyIdToken(tokenString);
             } catch (FirebaseAuthException e) {
-                logger.info("SECURITY_ERROR_INVALID_TOKEN || get (token= {} ) but this is not valid token  (request={})", token, request.getURI());
-                return unauthorizedMessage(exchange);
+                return unauthorizedMessage(exchange,"SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
             }
 
             //add user uid in header
