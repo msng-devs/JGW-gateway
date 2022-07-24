@@ -1,25 +1,25 @@
 package com.jaramgroupware.jaramgateway.domain.rank;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "RANK")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "RANK")
 public class Rank {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "RANK_PK")
+    @Column("RANK_PK")
     private Integer id;
 
-    @Column(name = "RANK_NM",nullable = false,unique = true,length = 45)
+    @Column("RANK_NM")
     private String name;
 
 

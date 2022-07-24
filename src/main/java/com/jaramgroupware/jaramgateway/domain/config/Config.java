@@ -1,28 +1,27 @@
 package com.jaramgroupware.jaramgateway.domain.config;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "CONFIG")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "CONFIG")
 public class Config {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONFIG_PK")
+    @Column("CONFIG_PK")
     private Integer id;
 
-    @Column(name = "CONFIG_NM",nullable = false,unique = true,length = 50)
+    @Column("CONFIG_NM")
     private String name;
 
-    @Column(name = "CONFIG_VAL",nullable = false,length = 50)
+    @Column("CONFIG_VAL")
     private String val;
 
 }

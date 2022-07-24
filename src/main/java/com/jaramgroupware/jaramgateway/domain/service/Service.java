@@ -1,30 +1,28 @@
 package com.jaramgroupware.jaramgateway.domain.service;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import javax.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "SERVICE")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "SERVICE")
 public class Service {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SERVICE_PK")
+    @Column("SERVICE_PK")
     private Integer id;
 
-    @Column(name = "SERVICE_NM",nullable = false,unique = true,length = 45)
+    @Column("SERVICE_NM")
     private String name;
 
-    @Column(name = "SERVICE_DOMAIN",nullable = false,unique = true,length = 45)
+    @Column("SERVICE_DOMAIN")
     private String domain;
 
-    @Column(name = "SERVICE_INDEX")
+    @Column("SERVICE_INDEX")
     private String index;
 }

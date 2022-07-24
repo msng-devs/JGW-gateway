@@ -1,25 +1,24 @@
 package com.jaramgroupware.jaramgateway.domain.major;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "MAJOR")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "MAJOR")
 public class Major {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MAJOR_PK")
+    @Column("MAJOR_PK")
     private Integer id;
 
-    @Column(name = "MAJOR_NM",nullable = false,unique = true,length = 45)
+    @Column("MAJOR_NM")
     private String name;
 
 

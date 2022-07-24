@@ -1,17 +1,12 @@
 package com.jaramgroupware.jaramgateway.dto.member;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.jaramgroupware.jaramgateway.domain.major.Major;
 import com.jaramgroupware.jaramgateway.domain.member.Member;
 import com.jaramgroupware.jaramgateway.domain.rank.Rank;
 import com.jaramgroupware.jaramgateway.domain.role.Role;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-@JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Data
 @ToString
 @Getter
 @NoArgsConstructor
@@ -27,18 +22,6 @@ public class MemberDetailDto {
     private Role role;
     private Integer year;
 
-    @Builder
-    public MemberDetailDto(String id, String email, String name, String phoneNumber, String studentID, Major major, Rank rank, Role role, Integer year) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.studentID = studentID;
-        this.major = major;
-        this.rank = rank;
-        this.role = role;
-        this.year = year;
-    }
 
     public MemberDetailDto(Member member) {
         this.id = member.getId();

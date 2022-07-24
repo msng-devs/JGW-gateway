@@ -1,24 +1,22 @@
 package com.jaramgroupware.jaramgateway.domain.method;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import javax.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "METHOD")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "METHOD")
 public class Method {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "METHOD_PK")
+    @Column("METHOD_PK")
     private Integer id;
 
-    @Column(name = "METHOD_NM",nullable = false,unique = true,length = 45)
+    @Column("METHOD_NM")
     private String name;
 }

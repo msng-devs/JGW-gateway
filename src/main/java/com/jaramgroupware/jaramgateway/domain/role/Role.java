@@ -1,25 +1,24 @@
 package com.jaramgroupware.jaramgateway.domain.role;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 
 @Getter
-@Setter
 @ToString
-@NoArgsConstructor
-@Entity(name = "ROLE")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "ROLE")
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ROLE_PK")
+    @Column("ROLE_PK")
     private Integer id;
 
-    @Column(name = "ROLE_NM",nullable = false,unique = true,length = 45)
+    @Column("ROLE_NM")
     private String name;
 
 

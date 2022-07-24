@@ -1,6 +1,5 @@
 package com.jaramgroupware.jaramgateway.service;
 
-import com.jaramgroupware.jaramgateway.domain.config.ConfigRepository;
 import com.jaramgroupware.jaramgateway.domain.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
