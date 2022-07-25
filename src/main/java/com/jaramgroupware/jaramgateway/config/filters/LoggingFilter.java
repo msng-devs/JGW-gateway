@@ -12,7 +12,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class LoggingFilter implements GlobalFilter, Ordered {
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Bean
     public GlobalFilter customFilter() {
         return new LoggingFilter();
@@ -20,7 +22,7 @@ public class LoggingFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        logger.info("global {}",exchange.getRequest().getLocalAddress());
+        logger.info("global {} {}",exchange.getRequest().getLocalAddress(),exchange.getRequest().getURI());
         return chain.filter(exchange);
     }
 

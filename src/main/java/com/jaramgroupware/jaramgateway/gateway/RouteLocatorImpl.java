@@ -1,9 +1,11 @@
 package com.jaramgroupware.jaramgateway.gateway;
 
 import com.jaramgroupware.jaramgateway.config.filters.AuthMemberFilterFactory;
+import com.jaramgroupware.jaramgateway.config.filters.FireBaseAuthFilterFactory;
 import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -31,6 +33,8 @@ public class RouteLocatorImpl implements RouteLocator {
     @Autowired
     private final AuthMemberFilterFactory authMemberFilterFactory;
 
+    @Autowired
+    private final FireBaseAuthFilterFactory fireBaseAuthFilterFactory;
 
     /**
      * 모든 route를 가져와서 등록
@@ -57,7 +61,6 @@ public class RouteLocatorImpl implements RouteLocator {
 
         BooleanSpec booleanSpec = predicateSpec.path(route.getPath());
 
-
         //service name apply
         if (!StringUtils.isEmpty(route.getMethod().getName())) {
             booleanSpec.and()
@@ -65,10 +68,17 @@ public class RouteLocatorImpl implements RouteLocator {
         }
 
         //if target path has role, apply authMemberFilter
-        if (!StringUtils.isEmpty(route.getRole().getName())) {
+        //but it has guest role, not apply authMemberFilter
+        if (!StringUtils.isEmpty(route.getRole().getName()) && route.getRole().getId() != 1) {
+
+            booleanSpec.filters(f -> f.filters(fireBaseAuthFilterFactory.apply(
+                    config -> config.setEnable(true)
+            )));
+
             booleanSpec.filters(f -> f.filters(authMemberFilterFactory.apply(
                     config -> config.setRole(route.getRole().getId())
             )));
+
         }
 
 

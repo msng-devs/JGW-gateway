@@ -3,7 +3,9 @@ package com.jaramgroupware.jaramgateway.config.filters;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,12 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
      * FireBaseAuthFilter의 설정 클래스.
      * FireBaseAuthFilter는 별도의 설정이 없음.
      */
+    @Getter
+    @Setter
+    @Validated
     public static class Config {
+        @NotEmpty
+        private boolean isEnable;
     }
 
     @Override
