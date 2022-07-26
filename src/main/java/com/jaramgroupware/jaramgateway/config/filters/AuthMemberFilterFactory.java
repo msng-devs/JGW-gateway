@@ -92,13 +92,17 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {
+                        //if not register member, reject
+                        if (memberDetailDto == null)
+                            return unauthorizedMessage(exchange,
+                                    "SECURITY_ERROR_USER_NOT_FOUND  || get (uid= "+userUid+" ) but this uid cannot found in member table! (request="+request.getURI()+")");
+
+                        //if member's role is lower than route's role, reject
                         if (memberDetailDto.getRole().getId() < config.role)
-                            return unauthorizedMessage(exchange,"(uid ="+userUid+") access. (request="+request.getURI()+")");
+                            return unauthorizedMessage(exchange,"SECURITY_ERROR_NOT_SUITABLE_ROLE || (uid ="+userUid+") access. (request="+request.getURI()+")");
+
                         return chain.filter(exchange);
-                    })
-                    .switchIfEmpty(
-                            unauthorizedMessage(exchange,
-                                    "SECURITY_ERROR_USER_NOT_FOUND  || get (uid= "+userUid+" ) but this uid cannot found in member table! (request="+request.getURI()+")"));
+                    });
 
         });
     }

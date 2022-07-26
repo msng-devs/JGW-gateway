@@ -19,7 +19,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 "ON RANK.RANK_PK = MEMBER.RANK_RANK_PK\n" +
                 "LEFT JOIN MAJOR\n" +
                 "ON MAJOR.MAJOR_PK = MEMBER.MAJOR_MAJOR_PK\n" +
-                "WHERE MEMBER_PK ="+id;
+                "WHERE MEMBER_PK = '"+id+ "'";
 
         return client.sql(query)
                 .map(memberMapper::apply)
