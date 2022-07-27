@@ -70,20 +70,27 @@ public class RouteLocatorImpl implements RouteLocator {
 
         //if target path has role, apply authMemberFilter
         //but it has guest role, not apply authMemberFilter
-        if (!StringUtils.isEmpty(route.getRole().getName()) && route.getRole().getId() != 1) {
+        if (!StringUtils.isEmpty(route.getRole().getName())) {
 
             booleanSpec.filters(f -> f.filters(fireBaseAuthFilterFactory.apply(
                     config -> config.setEnable(true)
             )));
 
             booleanSpec.filters(f -> f.filters(authMemberFilterFactory.apply(
-                    config -> config.setRole(route.getRole().getId())
+                    config -> {config.setRole(route.getRole().getId());
+                    //if isAddUserInfo is true, and route's role isn't guest, set isAddUserInfo true
+                        if ((route.isAddUserInfo() && route.getRole().getId() != 1)) {
+                            config.setAddUserInfo(true);
+                        } else {
+                            config.setAddUserInfo(false);
+                        }
+                    }
             )));
 
         }
 
-        //if it is refresh route, add refresh filter
-        if (route.getPath().equals("/gateway/refresh")) {
+        //check option, and apply option's filter
+        if (route.isGatewayRefresh()) {
             booleanSpec.filters(f -> f.filters(gatewayRefreshFactory.apply(
                     config -> config.setEnable(true)
             )));

@@ -57,7 +57,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-tomcat:2.7.1'
     implementation 'org.springframework.boot:spring-boot-starter-actuator:2.7.2'
     implementation 'org.springframework.boot:spring-boot-starter-webflux:2.7.2'
-
+    implementation 'org.json:json:20220320'
 }
 
 dependencyManagement {

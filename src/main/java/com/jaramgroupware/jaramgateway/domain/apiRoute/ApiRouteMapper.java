@@ -1,5 +1,6 @@
 package com.jaramgroupware.jaramgateway.domain.apiRoute;
 
+
 import com.jaramgroupware.jaramgateway.domain.method.Method;
 import com.jaramgroupware.jaramgateway.domain.role.Role;
 import com.jaramgroupware.jaramgateway.domain.service.Service;
@@ -18,6 +19,8 @@ public class ApiRouteMapper implements BiFunction<Row, RowMetadata, ApiRoute> {
         return ApiRoute.builder()
                 .id(row.get("API_ROUTE_PK",Integer.class))
                 .path(row.get("API_ROUTE_PATH",String.class))
+                .isGatewayRefresh(row.get("API_ROUTE_GATEWAY_REFRESH",boolean.class))
+                .isAddUserInfo(row.get("API_ROUTE_ADD_USER_INFO",boolean.class))
                 .role(Role.builder()
                         .id(row.get("ROLE_PK",Integer.class))
                         .name(row.get("ROLE_NM",String.class))

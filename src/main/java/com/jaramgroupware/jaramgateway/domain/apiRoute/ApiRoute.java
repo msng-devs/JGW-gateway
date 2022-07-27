@@ -24,6 +24,12 @@ public class ApiRoute {
     @Column("API_ROUTE_PATH")
     private String path;
 
+    @Column("API_ROUTE_GATEWAY_REFRESH")
+    private boolean isGatewayRefresh;
+
+    @Column("API_ROUTE_ADD_USER_INFO")
+    private boolean isAddUserInfo;
+
     @Transient
     private Role role;
 
@@ -32,4 +38,5 @@ public class ApiRoute {
 
     @Transient
     private Method method;
+
 }

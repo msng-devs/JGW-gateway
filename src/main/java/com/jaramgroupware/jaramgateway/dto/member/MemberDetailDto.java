@@ -1,5 +1,6 @@
 package com.jaramgroupware.jaramgateway.dto.member;
 
+import com.google.gson.JsonObject;
 import com.jaramgroupware.jaramgateway.domain.major.Major;
 import com.jaramgroupware.jaramgateway.domain.member.Member;
 import com.jaramgroupware.jaramgateway.domain.rank.Rank;

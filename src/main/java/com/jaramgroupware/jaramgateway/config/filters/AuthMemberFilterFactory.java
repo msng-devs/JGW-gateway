@@ -1,23 +1,32 @@
 package com.jaramgroupware.jaramgateway.config.filters;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import com.jaramgroupware.jaramgateway.service.MemberService;
+import io.grpc.internal.JsonParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.http.entity.ContentType;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
+import org.springframework.cloud.gateway.filter.factory.rewrite.ModifyRequestBodyGatewayFilterFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +41,9 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
     @Autowired
     private final MemberService memberService;
-
+    @Autowired
+    private final ModifyRequestBodyGatewayFilterFactory modifyRequestBodyGatewayFilterFactory;
+    private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
@@ -49,6 +60,8 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         @NotEmpty
         private Integer role;
 
+        @NotEmpty
+        private boolean isAddUserInfo;
     }
 
     @Override
@@ -69,6 +82,17 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return exchange.getResponse().setComplete();
     }
 
+    /**
+     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
+     * @param exchange ServerWebExchange
+     * @param message 로그에 남길 메시지
+     * @return
+     */
+    public Mono<Void> errorMessage(ServerWebExchange exchange,String message){
+        logger.info("{}",message);
+        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+        return exchange.getResponse().setComplete();
+    }
 
     /**
      * AuthMemberFilter의 기능을 구현한 클래스,
@@ -87,6 +111,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
             ServerHttpRequest request = exchange.getRequest();
             String userUid = Objects.requireNonNull(request.getHeaders().get("user_uid")).get(0);
+            String requestBody = exchange.getAttribute("cachedRequestBodyObject");
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {
@@ -98,6 +123,27 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
                         //if member's role is lower than route's role, reject
                         if (memberDetailDto.getRole().getId() < config.role)
                             return unauthorizedMessage(exchange,"SECURITY_ERROR_NOT_SUITABLE_ROLE || (uid ="+userUid+") access. (request="+request.getURI()+")");
+
+                        if (config.isAddUserInfo){
+
+                            //parse request body
+                            JSONObject body;
+                            if(requestBody != null) body = new JSONObject(requestBody);
+
+                            //if it hasn't body, create empty json
+                            else body = new JSONObject();
+
+                            //put member json obeject.
+                            body.put("member",new JSONObject(memberDetailDto));
+
+                            logger.debug(body.toString());
+                            //modifyRequestBody, and return it
+                            ModifyRequestBodyGatewayFilterFactory.Config modifyRequestConfig = new ModifyRequestBodyGatewayFilterFactory.Config()
+                                    .setContentType(ContentType.APPLICATION_JSON.getMimeType())
+                                    .setRewriteFunction(String.class, String.class, (newExchange, originalRequestBody) -> Mono.just(body.toString()));
+
+                            return modifyRequestBodyGatewayFilterFactory.apply(modifyRequestConfig).filter(exchange, chain);
+                        }
 
                         return chain.filter(exchange);
                     });
