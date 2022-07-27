@@ -2,6 +2,7 @@ package com.jaramgroupware.jaramgateway.gateway;
 
 import com.jaramgroupware.jaramgateway.config.filters.AuthMemberFilterFactory;
 import com.jaramgroupware.jaramgateway.config.filters.FireBaseAuthFilterFactory;
+import com.jaramgroupware.jaramgateway.config.filters.GatewayRefreshFactory;
 import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.RouteRefreshListener;
 import org.springframework.cloud.gateway.route.builder.BooleanSpec;
 import org.springframework.cloud.gateway.route.builder.Buildable;
 import org.springframework.cloud.gateway.route.builder.PredicateSpec;
@@ -24,17 +26,16 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class RouteLocatorImpl implements RouteLocator {
 
-    @Autowired
+
     private final ApiRouteService apiRouteService;
 
-    @Autowired
     private final RouteLocatorBuilder routeLocatorBuilder;
 
-    @Autowired
     private final AuthMemberFilterFactory authMemberFilterFactory;
 
-    @Autowired
     private final FireBaseAuthFilterFactory fireBaseAuthFilterFactory;
+
+    private final GatewayRefreshFactory gatewayRefreshFactory;
 
     /**
      * 모든 route를 가져와서 등록
@@ -80,6 +81,15 @@ public class RouteLocatorImpl implements RouteLocator {
             )));
 
         }
+
+        //if it is refresh route, add refresh filter
+        if (route.getPath().equals("/gateway/refresh")) {
+            booleanSpec.filters(f -> f.filters(gatewayRefreshFactory.apply(
+                    config -> config.setEnable(true)
+            )));
+        }
+
+
 
 
         //set domain and return route

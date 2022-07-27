@@ -49,8 +49,6 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         @NotEmpty
         private Integer role;
 
-        @NotEmpty
-        private boolean isAddUserInfo;
     }
 
     @Override
