@@ -96,7 +96,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         JSONObject newBody;
         if(originalRequestBody != null) newBody = new JSONObject(originalRequestBody);
 
-            //if it hasn't body, create empty json
+        //if it hasn't body, create empty json
         else newBody = new JSONObject();
 
         //put member json obeject.
@@ -120,8 +120,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return ((exchange, chain) -> {
 
             ServerHttpRequest request = exchange.getRequest();
-            String userUid = Objects.requireNonNull(request.getHeaders().get("user_uid")).get(0);
-//            Object requestBody = exchange.getAttribute()
+            String userUid = Objects.requireNonNull(request.getHeaders().get("uid")).get(0);
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {

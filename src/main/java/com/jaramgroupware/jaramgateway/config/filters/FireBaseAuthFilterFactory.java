@@ -90,12 +90,12 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
             FirebaseToken decodedToken;
 
             //if request has no firebase token, reject this request
-            if (!request.getHeaders().containsKey("token")) {
+            if (!request.getHeaders().containsKey("Authorization")||!Objects.requireNonNull(request.getHeaders().get("Authorization")).get(0).startsWith("Bearer ")) {
                 return unauthorizedMessage(exchange,"SECURITY_NO_TOKEN || it has no token in header.  (request="+request.getURI()+")");
             }
 
-            List<String> token = request.getHeaders().get("token");
-            String tokenString = Objects.requireNonNull(token).get(0);
+            List<String> token = request.getHeaders().get("Authorization");
+            String tokenString = Objects.requireNonNull(token).get(0).substring(7);
 
             // verify IdToken
             // if firebase token is invalid token, reject this request (UNAUTHORIZED)
@@ -106,7 +106,7 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
             }
 
             //add user uid in header
-            request = exchange.getRequest().mutate().header("user_uid", decodedToken.getUid()).build();
+            request = exchange.getRequest().mutate().header("uid", decodedToken.getUid()).build();
 
             return chain.filter(exchange.mutate().request(request).build());
         });
