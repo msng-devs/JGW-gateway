@@ -2,9 +2,8 @@ package com.jaramgroupware.jaramgateway.config.filters;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
+import com.jaramgroupware.jaramgateway.dto.member.MemberDetailDto;
 import com.jaramgroupware.jaramgateway.service.MemberService;
-import io.grpc.internal.JsonParser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,18 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
 import org.springframework.cloud.gateway.filter.factory.rewrite.ModifyRequestBodyGatewayFilterFactory;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
-import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,7 +37,9 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
     @Autowired
     private final MemberService memberService;
     @Autowired
+
     private final ModifyRequestBodyGatewayFilterFactory modifyRequestBodyGatewayFilterFactory;
+
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -94,6 +91,19 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return exchange.getResponse().setComplete();
     }
 
+    public Mono<String> rewriteBody(MemberDetailDto memberDetailDto,String originalRequestBody){
+        //parse request body
+        JSONObject newBody;
+        if(originalRequestBody != null) newBody = new JSONObject(originalRequestBody);
+
+            //if it hasn't body, create empty json
+        else newBody = new JSONObject();
+
+        //put member json obeject.
+        newBody.put("member",new JSONObject(memberDetailDto));
+
+        return Mono.just(newBody.toString());
+    }
     /**
      * AuthMemberFilter의 기능을 구현한 클래스,
      *
@@ -111,7 +121,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
             ServerHttpRequest request = exchange.getRequest();
             String userUid = Objects.requireNonNull(request.getHeaders().get("user_uid")).get(0);
-            String requestBody = exchange.getAttribute("cachedRequestBodyObject");
+//            Object requestBody = exchange.getAttribute()
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {
@@ -126,22 +136,10 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
                         if (config.isAddUserInfo){
 
-                            //parse request body
-                            JSONObject body;
-                            if(requestBody != null) body = new JSONObject(requestBody);
-
-                            //if it hasn't body, create empty json
-                            else body = new JSONObject();
-
-                            //put member json obeject.
-                            body.put("member",new JSONObject(memberDetailDto));
-
-                            logger.debug(body.toString());
                             //modifyRequestBody, and return it
                             ModifyRequestBodyGatewayFilterFactory.Config modifyRequestConfig = new ModifyRequestBodyGatewayFilterFactory.Config()
                                     .setContentType(ContentType.APPLICATION_JSON.getMimeType())
-                                    .setRewriteFunction(String.class, String.class, (newExchange, originalRequestBody) -> Mono.just(body.toString()));
-
+                                    .setRewriteFunction(String.class, String.class, (newExchange, originalRequestBody) -> rewriteBody(memberDetailDto,originalRequestBody));
                             return modifyRequestBodyGatewayFilterFactory.apply(modifyRequestConfig).filter(exchange, chain);
                         }
 
