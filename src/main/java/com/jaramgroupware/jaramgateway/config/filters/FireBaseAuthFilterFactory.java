@@ -3,6 +3,7 @@ package com.jaramgroupware.jaramgateway.config.filters;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.jaramgroupware.jaramgateway.utils.ErrorResponseCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,7 +38,7 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
     private final FirebaseAuth firebaseAuth;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private final ErrorResponseCreator errorResponseCreator;
 
     /**
      * FireBaseAuthFilter의 설정 클래스.
@@ -57,17 +58,6 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
         return new Config();
     }
 
-    /**
-     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
-     * @param exchange ServerWebExchange
-     * @param message 로그에 남길 메시지
-     * @return
-     */
-    public Mono<Void> unauthorizedMessage(ServerWebExchange exchange,String message){
-        logger.info("{}",message);
-        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return exchange.getResponse().setComplete();
-    }
 
 
     /**
@@ -91,7 +81,11 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
 
             //if request has no firebase token, reject this request
             if (!request.getHeaders().containsKey("Authorization")||!Objects.requireNonNull(request.getHeaders().get("Authorization")).get(0).startsWith("Bearer ")) {
-                return unauthorizedMessage(exchange,"SECURITY_NO_TOKEN || it has no token in header.  (request="+request.getURI()+")");
+                return errorResponseCreator.errorMessage(exchange,
+                        "SECURITY_ERROR_NO_TOKEN",
+                        HttpStatus.BAD_REQUEST,
+                        request.getURI().toString(),
+                        "SECURITY_ERROR_NO_TOKEN || it has no token in header.  (request="+request.getURI()+")");
             }
 
             List<String> token = request.getHeaders().get("Authorization");
@@ -102,7 +96,11 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
             try {
                 decodedToken = firebaseAuth.verifyIdToken(tokenString);
             } catch (FirebaseAuthException e) {
-                return unauthorizedMessage(exchange,"SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+                return errorResponseCreator.errorMessage(exchange,
+                        "SECURITY_ERROR_INVALID_TOKEN",
+                        HttpStatus.FORBIDDEN,
+                        request.getURI().toString(),
+                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
             }
 
             //add user uid in header

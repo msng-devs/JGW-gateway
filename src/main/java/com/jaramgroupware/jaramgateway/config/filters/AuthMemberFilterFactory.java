@@ -4,6 +4,7 @@ package com.jaramgroupware.jaramgateway.config.filters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaramgroupware.jaramgateway.dto.member.MemberDetailDto;
 import com.jaramgroupware.jaramgateway.service.MemberService;
+import com.jaramgroupware.jaramgateway.utils.ErrorResponseCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,14 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
 import org.springframework.cloud.gateway.filter.factory.rewrite.ModifyRequestBodyGatewayFilterFactory;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -42,6 +47,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ErrorResponseCreator errorResponseCreator;
 
     /**
      * AuthMemberFilter의 설정 클래스.
@@ -67,29 +73,6 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return new Config();
     }
 
-    /**
-     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
-     * @param exchange ServerWebExchange
-     * @param message 로그에 남길 메시지
-     * @return
-     */
-    public Mono<Void> unauthorizedMessage(ServerWebExchange exchange,String message){
-        logger.info("{}",message);
-        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return exchange.getResponse().setComplete();
-    }
-
-    /**
-     * 인증오류 발생시 해당 요청을 reject 하고, 401 전달하는 클래스
-     * @param exchange ServerWebExchange
-     * @param message 로그에 남길 메시지
-     * @return
-     */
-    public Mono<Void> errorMessage(ServerWebExchange exchange,String message){
-        logger.info("{}",message);
-        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-        return exchange.getResponse().setComplete();
-    }
 
     public Mono<String> rewriteBody(MemberDetailDto memberDetailDto,String originalRequestBody){
         //parse request body
@@ -126,12 +109,19 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
                     .flatMap(memberDetailDto -> {
                         //if not register member, reject
                         if (memberDetailDto == null)
-                            return unauthorizedMessage(exchange,
-                                    "SECURITY_ERROR_USER_NOT_FOUND  || get (uid= "+userUid+" ) but this uid cannot found in member table! (request="+request.getURI()+")");
+                            return errorResponseCreator.errorMessage(exchange,
+                                            "SECURITY_ERROR_USER_NOT_FOUND",
+                                            HttpStatus.FORBIDDEN,
+                                            request.getURI().toString(),
+                                            "SECURITY_ERROR_USER_NOT_FOUND  || get (uid= "+userUid+" ) but this uid cannot found in member table! (request="+request.getURI()+")");
 
                         //if member's role is lower than route's role, reject
                         if (memberDetailDto.getRole().getId() < config.role)
-                            return unauthorizedMessage(exchange,"SECURITY_ERROR_NOT_SUITABLE_ROLE || (uid ="+userUid+") access. (request="+request.getURI()+")");
+                            return errorResponseCreator.errorMessage(exchange,
+                                    "SECURITY_ERROR_NOT_SUITABLE_ROLE",
+                                    HttpStatus.FORBIDDEN,
+                                    request.getURI().toString(),
+                                    "SECURITY_ERROR_NOT_SUITABLE_ROLE || (uid ="+userUid+") access. (request="+request.getURI()+")");
 
                         if (config.isAddUserInfo){
 
