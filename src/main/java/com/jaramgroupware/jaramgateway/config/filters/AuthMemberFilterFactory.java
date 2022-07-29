@@ -131,7 +131,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
                                     .setRewriteFunction(String.class, String.class, (newExchange, originalRequestBody) -> rewriteBody(memberDetailDto,originalRequestBody));
                             return modifyRequestBodyGatewayFilterFactory.apply(modifyRequestConfig).filter(exchange, chain);
                         }
-
+                        logger.info("IP: {} Request: {} Uid: {} member auth pass.",request.getLocalAddress(),request.getURI(),memberDetailDto.getId());
                         return chain.filter(exchange);
                     });
 

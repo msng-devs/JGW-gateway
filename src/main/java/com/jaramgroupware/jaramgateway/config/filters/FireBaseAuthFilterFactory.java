@@ -105,7 +105,7 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
 
             //add user uid in header
             request = exchange.getRequest().mutate().header("uid", decodedToken.getUid()).build();
-
+            logger.info("IP: {} Request: {} Token: {} firebase auth pass.",request.getLocalAddress(),request.getURI(),token);
             return chain.filter(exchange.mutate().request(request).build());
         });
     }

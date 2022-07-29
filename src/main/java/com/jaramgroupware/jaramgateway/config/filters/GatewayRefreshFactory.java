@@ -68,7 +68,7 @@ public class GatewayRefreshFactory implements GatewayFilterFactory<GatewayRefres
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             gatewayRefresh.refreshRoutes();
-            logger.info("{}","Refresh Route.....");
+            logger.info("IP: {} Uid: {} run refresh.",exchange.getRequest().getLocalAddress(),exchange.getRequest().getHeaders().get("user_uid"));
             return chain.filter(exchange);
 
         });

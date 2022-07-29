@@ -22,7 +22,7 @@ public class LoggingFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        logger.info("global {} {}",exchange.getRequest().getLocalAddress(),exchange.getRequest().getURI());
+        logger.info("IP: {} Request: {} get new request.",exchange.getRequest().getLocalAddress(),exchange.getRequest().getURI());
         return chain.filter(exchange);
     }
 
