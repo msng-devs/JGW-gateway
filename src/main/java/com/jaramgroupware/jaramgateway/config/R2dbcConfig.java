@@ -6,7 +6,11 @@ import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 /**
- * R2dbc 연결 설정 클래스
+ * 자람 그룹웨어의 Gateway의 R2dbc 설정클래스입니다.
+ *
+ * @author hrabit64(37기 황준서)
+ * @version 1.0
+ * @since 1.0
  */
 @Configuration
 @EnableR2dbcRepositories

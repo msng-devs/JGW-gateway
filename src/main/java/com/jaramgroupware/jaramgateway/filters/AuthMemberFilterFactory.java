@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.config.filters;
+package com.jaramgroupware.jaramgateway.filters;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,24 +16,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
 import org.springframework.cloud.gateway.filter.factory.rewrite.ModifyRequestBodyGatewayFilterFactory;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * JGW-gateway 인가 부분을 담당하는 필터
+ * 자람 그룹웨어에서 유저 인증 및 인가를 담당하는 필터입니다.<br><br>
  *
+ * <img src="https://github.com/msng-devs/JGW-Docs/blob/main/images/%ED%95%84%ED%84%B0%EA%B5%AC%EC%A1%B0.png?raw=true"><br>
  *
+ * @author hrabit64(37기 황준서)
+ * @version 1.0
+ * @since 1.0
  */
 @Component
 @RequiredArgsConstructor
@@ -74,6 +73,13 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
     }
 
 
+    /**
+     * 기존 request body에 json object로 멤버 정보를 추가합니다.
+     *
+     * @param memberDetailDto 추가할 멤버의 정보
+     * @param originalRequestBody 기존 request body
+     * @return
+     */
     public Mono<String> rewriteBody(MemberDetailDto memberDetailDto,String originalRequestBody){
         //parse request body
         JSONObject newBody;
@@ -94,7 +100,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
      *
      * 1. header의 사용자 uid로 member table에서 해당 멤버를 조회, 만약 발견이 되지 않으면 인증오류 발생
      * 2. 해당 member의 role을 조회하여 설정의 권한에 적절하지 않은 role이라면 인증오류 발생
-     *
+     * 3. 만약 isAddUserInfo이 활성화 상태라면, request body에 멤버 정보 추가
      * @param config
      * @return
      */

@@ -13,7 +13,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * Firebase admin sdk 등록 config
+ * 자람 그룹웨어의 Gateway의 firebase admin 설정 클래스입니다.
+ * firebase.json에 담겨진 시크릿키를 사용하여 gateway를 firebase app으로 등록시킵니다.
+ *
+ * @author hrabit64(37기 황준서)
+ * @version 1.0
+ * @since 1.0
  */
 @Configuration
 public class FirebaseConfig {

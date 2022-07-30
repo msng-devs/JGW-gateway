@@ -16,7 +16,6 @@ public class ApiRouteService {
 
     @Autowired
     private final ApiRouteRepository routeRepository;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     /**

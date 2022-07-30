@@ -1,9 +1,8 @@
 package com.jaramgroupware.jaramgateway.config;
 
-import com.jaramgroupware.jaramgateway.config.filters.AuthMemberFilterFactory;
-import com.jaramgroupware.jaramgateway.config.filters.FireBaseAuthFilterFactory;
-import com.jaramgroupware.jaramgateway.config.filters.GatewayRefreshFactory;
-import com.jaramgroupware.jaramgateway.gateway.RouteLocatorImpl;
+import com.jaramgroupware.jaramgateway.filters.AuthMemberFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.FireBaseAuthFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.GatewayRefreshFactory;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -11,7 +10,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring cloud Gateway Config 클래스. RouteLocatorImpl를 통해 route를 등록
+ * 자람 그룹웨어의 Gateway의 설정 클래스입니다.
+ * RouteLocatorImpl 클래스를 적용시킵니다.
+ *
+ * @author hrabit64(37기 황준서)
+ * @version 1.0
+ * @since 1.0
  */
 @Configuration
 public class GatewayConfig {

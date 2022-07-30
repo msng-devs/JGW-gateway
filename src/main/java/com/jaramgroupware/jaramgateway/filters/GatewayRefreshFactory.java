@@ -1,7 +1,6 @@
-package com.jaramgroupware.jaramgateway.config.filters;
+package com.jaramgroupware.jaramgateway.filters;
 
 
-import com.jaramgroupware.jaramgateway.service.MemberService;
 import com.jaramgroupware.jaramgateway.utils.GatewayRefresh;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,20 +10,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 
 /**
- * JGW-gateway 리프레쉬를 담당하는 필터
- * 해당 필터를 통하는 route를 사용하면, gateway의 route 정보를 갱신할 수 있다.
+ * 게이트웨이에서 게이트웨이 갱신을 담당하는 필터입니다.<br>
+ * 특별한 기능 없이, 인증 및 인가처리가 모두 완료된 멤버가 해당 필터를 실행시키면 API_ROUTE 테이블을 확인하여 변경점을 반영합니다.<br>
  *
+ * @author hrabit64(37기 황준서)
+ * @version 1.0
+ * @since 1.0
  */
 @Component
 @RequiredArgsConstructor
@@ -36,10 +33,9 @@ public class GatewayRefreshFactory implements GatewayFilterFactory<GatewayRefres
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * AuthMemberFilter의 설정 클래스.
+     * GatewayRefreshFilter의 설정 클래스.<br>
+     * GatewayRefresh는 추가적인 설정이 없습니다.<br>
      *
-     * role = 해당 path에 접근할 수 있는 최소 role
-     * isAddUserInfo = request의 body에 member를 추가할껀지 여부
      */
     @Getter
     @Setter
@@ -57,9 +53,9 @@ public class GatewayRefreshFactory implements GatewayFilterFactory<GatewayRefres
 
 
     /**
-     * GatewayRefreshFactory 의 기능을 구현한 클래스,
+     * GatewayRefreshFactory 의 기능을 구현한 클래스,<br>
      *
-     * GatewayRefresh component 를 활용하여 게이트웨이를 갱신함
+     * GatewayRefresh component 를 활용하여 게이트웨이를 갱신함<br>
      *
      * @param config
      * @return
