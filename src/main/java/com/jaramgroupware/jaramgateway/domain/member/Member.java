@@ -10,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.Email;
+import java.time.LocalDateTime;
 
 @Getter
 @ToString
@@ -36,7 +37,14 @@ public class Member {
     @Column("MEMBER_STUDENT_ID")
     private String studentID;
 
-    @Column("MAJOR_MAJOR_PK")
+
+    @Column("MEMBER_MODIFIED_DTTM")
+    private LocalDateTime modifiedDateTime;
+
+    @Column("MEMBER_CREATED_DTTM")
+    private LocalDateTime createdDateTime;
+
+    @Transient
     private Major major;
 
     @Transient

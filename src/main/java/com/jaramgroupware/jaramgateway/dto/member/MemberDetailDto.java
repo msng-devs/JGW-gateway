@@ -7,6 +7,8 @@ import com.jaramgroupware.jaramgateway.domain.rank.Rank;
 import com.jaramgroupware.jaramgateway.domain.role.Role;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @ToString
 @Getter
@@ -22,7 +24,8 @@ public class MemberDetailDto {
     private Rank rank;
     private Role role;
     private Integer year;
-
+    private LocalDateTime createdDateTime;
+    private LocalDateTime modifiedDateTime;
 
     public MemberDetailDto(Member member) {
         this.id = member.getId();
@@ -34,5 +37,7 @@ public class MemberDetailDto {
         this.rank = member.getRank();
         this.role = member.getRole();
         this.year = member.getYear();
+        this.createdDateTime = member.getCreatedDateTime();
+        this.modifiedDateTime = member.getModifiedDateTime();
     }
 }

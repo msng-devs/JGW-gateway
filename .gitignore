@@ -41,3 +41,8 @@ application.properties
 
 #firebase config
 firebase.json
+
+#logback
+logback.xml
+logback-proudct.xml
+logback-dev.xml

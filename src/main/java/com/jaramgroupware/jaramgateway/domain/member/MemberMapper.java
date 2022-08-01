@@ -8,6 +8,7 @@ import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.function.BiFunction;
 
 @Component
@@ -22,6 +23,8 @@ public class MemberMapper implements BiFunction<Row, RowMetadata, Member> {
                 .name(row.get("MEMBER_NM",String.class))
                 .phoneNumber(row.get("MEMBER_CELL_PHONE_NUMBER",String.class))
                 .studentID(row.get("MEMBER_STUDENT_ID",String.class))
+                .modifiedDateTime(row.get("MEMBER_MODIFIED_DTTM", LocalDateTime.class))
+                .createdDateTime(row.get("MEMBER_CREATED_DTTM", LocalDateTime.class))
                 .major(
                         Major.builder()
                                 .id(row.get("MAJOR_PK",Integer.class))
