@@ -109,7 +109,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
         return ((exchange, chain) -> {
 
             ServerHttpRequest request = exchange.getRequest();
-            String userUid = Objects.requireNonNull(request.getHeaders().get("uid")).get(0);
+            String userUid = Objects.requireNonNull(request.getHeaders().get("user_uid")).get(0);
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {
