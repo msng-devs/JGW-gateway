@@ -1,6 +1,5 @@
 package com.jaramgroupware.jaramgateway.dto.member;
 
-import com.google.gson.JsonObject;
 import com.jaramgroupware.jaramgateway.domain.major.Major;
 import com.jaramgroupware.jaramgateway.domain.member.Member;
 import com.jaramgroupware.jaramgateway.domain.rank.Rank;
@@ -26,6 +25,7 @@ public class MemberDetailDto {
     private Integer year;
     private LocalDateTime createdDateTime;
     private LocalDateTime modifiedDateTime;
+    private Byte isLeaveAbsence;
 
     public MemberDetailDto(Member member) {
         this.id = member.getId();
@@ -39,5 +39,6 @@ public class MemberDetailDto {
         this.year = member.getYear();
         this.createdDateTime = member.getCreatedDateTime();
         this.modifiedDateTime = member.getModifiedDateTime();
+        this.isLeaveAbsence = member.getIsLeaveAbsence();
     }
 }

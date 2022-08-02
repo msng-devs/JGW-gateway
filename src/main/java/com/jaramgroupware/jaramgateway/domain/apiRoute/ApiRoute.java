@@ -30,6 +30,9 @@ public class ApiRoute {
     @Column("API_ROUTE_ADD_USER_INFO")
     private boolean isAddUserInfo;
 
+    @Column("API_ROUTE_AUTHORIZATION")
+    private boolean isAuthorization;
+
     @Transient
     private Role role;
 

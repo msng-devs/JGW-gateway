@@ -113,6 +113,7 @@ public class AuthMemberFilterFactory implements GatewayFilterFactory<AuthMemberF
 
             return memberService.findMemberById(userUid)
                     .flatMap(memberDetailDto -> {
+                        logger.info(memberDetailDto.toString());
                         //if not register member, reject
                         if (memberDetailDto == null)
                             return errorResponseCreator.errorMessage(exchange,

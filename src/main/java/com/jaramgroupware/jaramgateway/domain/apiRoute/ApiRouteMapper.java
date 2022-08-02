@@ -21,6 +21,7 @@ public class ApiRouteMapper implements BiFunction<Row, RowMetadata, ApiRoute> {
                 .path(row.get("API_ROUTE_PATH",String.class))
                 .isGatewayRefresh(row.get("API_ROUTE_GATEWAY_REFRESH",boolean.class))
                 .isAddUserInfo(row.get("API_ROUTE_ADD_USER_INFO",boolean.class))
+                .isAuthorization(row.get("API_ROUTE_AUTHORIZATION",boolean.class))
                 .role(Role.builder()
                         .id(row.get("ROLE_PK",Integer.class))
                         .name(row.get("ROLE_NM",String.class))

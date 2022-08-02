@@ -25,6 +25,7 @@ public class MemberMapper implements BiFunction<Row, RowMetadata, Member> {
                 .studentID(row.get("MEMBER_STUDENT_ID",String.class))
                 .modifiedDateTime(row.get("MEMBER_MODIFIED_DTTM", LocalDateTime.class))
                 .createdDateTime(row.get("MEMBER_CREATED_DTTM", LocalDateTime.class))
+                .isLeaveAbsence(row.get("MEMBER_LEAVE_ABSENCE",Byte.class))
                 .major(
                         Major.builder()
                                 .id(row.get("MAJOR_PK",Integer.class))

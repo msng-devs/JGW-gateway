@@ -80,23 +80,26 @@ public class RouteLocatorImpl implements RouteLocator {
                     .method(route.getMethod().getName());
         }
 
-        //if target path has role, apply authMemberFilter
-        if (!StringUtils.isEmpty(route.getRole().getName())) {
+        if(route.isAuthorization()){
 
             booleanSpec.filters(f -> f.filters(fireBaseAuthFilterFactory.apply(
                     config -> config.setEnable(true)
             )));
 
-            booleanSpec.filters(f -> f.filters(authMemberFilterFactory.apply(
-                    config -> {config.setRole(route.getRole().getId());
-                    //if isAddUserInfo is true, and route's role isn't guest, set isAddUserInfo true
-                        if ((route.isAddUserInfo() && route.getRole().getId() != 1)) {
-                            config.setAddUserInfo(true);
-                        } else {
-                            config.setAddUserInfo(false);
+            //if target path has role, apply authMemberFilter
+            if (!StringUtils.isEmpty(route.getRole().getName())) {
+
+                booleanSpec.filters(f -> f.filters(authMemberFilterFactory.apply(
+                        config -> {config.setRole(route.getRole().getId());
+                            //if isAddUserInfo is true, and route's role isn't guest, set isAddUserInfo true
+                            if ((route.isAddUserInfo() && route.getRole().getId() != 1)) {
+                                config.setAddUserInfo(true);
+                            } else {
+                                config.setAddUserInfo(false);
+                            }
                         }
-                    }
-            )));
+                )));
+            }
 
         }
 

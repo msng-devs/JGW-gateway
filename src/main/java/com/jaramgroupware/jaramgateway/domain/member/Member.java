@@ -56,5 +56,7 @@ public class Member {
     @Column("MEMBER_YEAR")
     private Integer year;
 
+    @Column("MEMBER_LEAVE_ABSENCE")
+    private Byte isLeaveAbsence;
 
 }
