@@ -37,12 +37,17 @@ public class Member {
     @Column("MEMBER_STUDENT_ID")
     private String studentID;
 
-
     @Column("MEMBER_MODIFIED_DTTM")
     private LocalDateTime modifiedDateTime;
 
     @Column("MEMBER_CREATED_DTTM")
     private LocalDateTime createdDateTime;
+
+    @Column("MEMBER_CREATED_BY")
+    private String createdBy;
+
+    @Column("MEMBER_MODIFIED_BY")
+    private String modifiedBy;
 
     @Transient
     private Major major;

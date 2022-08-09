@@ -26,6 +26,8 @@ public class MemberDetailDto {
     private LocalDateTime createdDateTime;
     private LocalDateTime modifiedDateTime;
     private Byte isLeaveAbsence;
+    private String createdBy;
+    private String modifiedBy;
 
     public MemberDetailDto(Member member) {
         this.id = member.getId();
@@ -40,5 +42,7 @@ public class MemberDetailDto {
         this.createdDateTime = member.getCreatedDateTime();
         this.modifiedDateTime = member.getModifiedDateTime();
         this.isLeaveAbsence = member.getIsLeaveAbsence();
+        this.modifiedBy = member.getModifiedBy();
+        this.createdBy = member.getCreatedBy();
     }
 }

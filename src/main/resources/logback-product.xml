@@ -19,9 +19,9 @@
     </appender>
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>ec2_logstash_url:5000</destination>
+        <destination>ubuntu.hrabit64.xyz:50000</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"appname":"appname","profile":"local"}</customFields>
+            <customFields>{"appname":"GATEWAY"}</customFields>
         </encoder>
     </appender>
 
