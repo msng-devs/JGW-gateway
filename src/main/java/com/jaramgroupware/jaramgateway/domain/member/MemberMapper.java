@@ -44,6 +44,7 @@ public class MemberMapper implements BiFunction<Row, RowMetadata, Member> {
                 .year(row.get("MEMBER_YEAR",Integer.class))
                 .modifiedBy(row.get("MEMBER_MODIFIED_BY",String.class))
                 .createdBy(row.get("MEMBER_CREATED_BY",String.class))
+                .dateofbirth(row.get("MEMBER_DATEOFBIRTH",Date.class))
                 .build();
 
     }

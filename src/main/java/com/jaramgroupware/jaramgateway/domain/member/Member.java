@@ -64,4 +64,6 @@ public class Member {
     @Column("MEMBER_LEAVE_ABSENCE")
     private Byte isLeaveAbsence;
 
+    @Column(name="MEMBER_DATEOFBIRTH")
+    private Date dateofbirth;
 }
