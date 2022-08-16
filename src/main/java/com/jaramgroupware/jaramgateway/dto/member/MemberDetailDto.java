@@ -6,6 +6,7 @@ import com.jaramgroupware.jaramgateway.domain.rank.Rank;
 import com.jaramgroupware.jaramgateway.domain.role.Role;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,6 +29,7 @@ public class MemberDetailDto {
     private Byte isLeaveAbsence;
     private String createdBy;
     private String modifiedBy;
+    private LocalDate dateOfBirth;
 
     public MemberDetailDto(Member member) {
         this.id = member.getId();
@@ -44,5 +46,6 @@ public class MemberDetailDto {
         this.isLeaveAbsence = member.getIsLeaveAbsence();
         this.modifiedBy = member.getModifiedBy();
         this.createdBy = member.getCreatedBy();
+        this.dateOfBirth = member.getDateofbirth();
     }
 }

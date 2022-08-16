@@ -18,19 +18,11 @@
         </encoder>
     </appender>
 
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>ec2_logstash_url:5000</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"appname":"appname","profile":"local"}</customFields>
-        </encoder>
-    </appender>
-
 
     <logger name="org.springframework" level="info"/>
     <logger name="com.jaramgroupware.jaramgateway" level="info"/>
 
     <root level="info">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOGSTASH"/>
     </root>
 </configuration>

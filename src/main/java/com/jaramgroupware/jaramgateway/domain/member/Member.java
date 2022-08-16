@@ -10,7 +10,9 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.Email;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @ToString
@@ -64,6 +66,6 @@ public class Member {
     @Column("MEMBER_LEAVE_ABSENCE")
     private Byte isLeaveAbsence;
 
-    @Column(name="MEMBER_DATEOFBIRTH")
-    private Date dateofbirth;
+    @Column("MEMBER_DATEOFBIRTH")
+    private LocalDate dateofbirth;
 }
