@@ -1,7 +1,7 @@
 package com.jaramgroupware.jaramgateway.config;
 
-import com.jaramgroupware.jaramgateway.filters.AuthMemberFilterFactory;
-import com.jaramgroupware.jaramgateway.filters.FireBaseAuthFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.AuthorizationFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.AuthenticationFilterFactory;
 import com.jaramgroupware.jaramgateway.filters.GatewayRefreshFactory;
 import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
@@ -32,9 +32,9 @@ public class RouteLocatorImpl implements RouteLocator {
 
     private final RouteLocatorBuilder routeLocatorBuilder;
 
-    private final AuthMemberFilterFactory authMemberFilterFactory;
+    private final AuthorizationFilterFactory authMemberFilterFactory;
 
-    private final FireBaseAuthFilterFactory fireBaseAuthFilterFactory;
+    private final AuthenticationFilterFactory fireBaseAuthFilterFactory;
 
     private final GatewayRefreshFactory gatewayRefreshFactory;
 
@@ -90,14 +90,7 @@ public class RouteLocatorImpl implements RouteLocator {
             if (!StringUtils.isEmpty(route.getRole().getName())) {
 
                 booleanSpec.filters(f -> f.filters(authMemberFilterFactory.apply(
-                        config -> {config.setRole(route.getRole().getId());
-                            //if isAddUserInfo is true, and route's role isn't guest, set isAddUserInfo true
-                            if ((route.isAddUserInfo() && route.getRole().getId() != 1)) {
-                                config.setAddUserInfo(true);
-                            } else {
-                                config.setAddUserInfo(false);
-                            }
-                        }
+                        config -> {config.setRole(route.getRole().getId()); }
                 )));
             }
 

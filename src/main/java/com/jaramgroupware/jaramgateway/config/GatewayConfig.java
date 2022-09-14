@@ -1,7 +1,7 @@
 package com.jaramgroupware.jaramgateway.config;
 
-import com.jaramgroupware.jaramgateway.filters.AuthMemberFilterFactory;
-import com.jaramgroupware.jaramgateway.filters.FireBaseAuthFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.AuthorizationFilterFactory;
+import com.jaramgroupware.jaramgateway.filters.AuthenticationFilterFactory;
 import com.jaramgroupware.jaramgateway.filters.GatewayRefreshFactory;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -22,8 +22,8 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routeLocator(ApiRouteService apiRouteService,
                                      RouteLocatorBuilder routeLocatorBuilder,
-                                     AuthMemberFilterFactory authMemberFilterFactory,
-                                     FireBaseAuthFilterFactory fireBaseAuthFilterFactory,
+                                     AuthorizationFilterFactory authMemberFilterFactory,
+                                     AuthenticationFilterFactory fireBaseAuthFilterFactory,
                                      GatewayRefreshFactory gatewayRefreshFactory) {
         return new RouteLocatorImpl(apiRouteService, routeLocatorBuilder,authMemberFilterFactory,fireBaseAuthFilterFactory,gatewayRefreshFactory);
     }

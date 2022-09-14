@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.jaramgroupware.jaramgateway.utils.ErrorResponseCreator;
+import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthClient;
+import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -26,8 +29,6 @@ import java.util.Objects;
  *
  * <img src="https://github.com/msng-devs/JGW-Docs/blob/main/images/%ED%95%84%ED%84%B0%EA%B5%AC%EC%A1%B0.png?raw=true"><br>
  *
- * ref:<br>
- * spring+firebase token validation https://velog.io/@couchcoding/Firebase%EB%A1%9C-Google-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0-Spring-%ED%8C%8C%ED%8A%B8
  * @author hrabit64(37기 황준서)
  * @version 1.0
  * @since 1.0
@@ -35,11 +36,9 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseAuthFilterFactory.Config> {
+public class AuthenticationFilterFactory implements GatewayFilterFactory<AuthenticationFilterFactory.Config> {
 
-    @Autowired
-    private final FirebaseAuth firebaseAuth;
-
+    private final JGWAuthClient jgwAuthClient;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ErrorResponseCreator errorResponseCreator;
 
@@ -80,7 +79,6 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
         return ((exchange, chain) -> {
 
             ServerHttpRequest request = exchange.getRequest();
-            FirebaseToken decodedToken;
 
             //if request has no firebase token, reject this request
             if (!request.getHeaders().containsKey("Authorization")||!Objects.requireNonNull(request.getHeaders().get("Authorization")).get(0).startsWith("Bearer ")) {
@@ -91,25 +89,33 @@ public class FireBaseAuthFilterFactory implements GatewayFilterFactory<FireBaseA
                         "SECURITY_ERROR_NO_TOKEN || it has no token in header.  (request="+request.getURI()+")");
             }
 
+            //get firebase token
             List<String> token = request.getHeaders().get("Authorization");
             String tokenString = Objects.requireNonNull(token).get(0).substring(7);
 
-            // verify IdToken
-            // if firebase token is invalid token, reject this request (UNAUTHORIZED)
-            try {
-                decodedToken = firebaseAuth.verifyIdToken(tokenString);
-            } catch (FirebaseAuthException e) {
-                return errorResponseCreator.errorMessage(exchange,
-                        "SECURITY_ERROR_INVALID_TOKEN",
-                        HttpStatus.FORBIDDEN,
-                        request.getURI().toString(),
-                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
-            }
+            //get authResult
+            Mono<JGWAuthResult> authResult = jgwAuthClient.authentication(tokenString);
 
-            //add user uid in header
-            request = exchange.getRequest().mutate().header("user_uid", decodedToken.getUid()).build();
-            logger.info("IP: {} Request: {} Token: {} firebase auth pass.",request.getLocalAddress(),request.getURI(),token);
-            return chain.filter(exchange.mutate().request(request).build());
+            return authResult.flatMap(
+                    jgwAuthResult -> {
+                        //if not valid, reject
+                        if(jgwAuthResult.isValid())
+                            return errorResponseCreator.errorMessage(exchange,
+                                    "SECURITY_ERROR_INVALID_TOKEN",
+                                    HttpStatus.FORBIDDEN,
+                                    request.getURI().toString(),
+                                    "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+
+                        ServerHttpRequest newRequest = exchange.getRequest();
+                        newRequest = exchange.getRequest().mutate().header("user_uid", jgwAuthResult.getUid()).build();
+                        newRequest = exchange.getRequest().mutate().header("user_role_id", jgwAuthResult.getRoleID().toString()).build();
+                        newRequest = exchange.getRequest().mutate().header("user_role_name", jgwAuthResult.getRoleName()).build();
+                        logger.info("IP: {} Request: {} Token: {} AuthenticationFilter pass",request.getLocalAddress(),request.getURI(),token);
+                        return chain.filter(exchange.mutate().request(request).build());
+                    }
+            );
+
+
         });
     }
 }
