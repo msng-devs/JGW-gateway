@@ -83,7 +83,7 @@ public class RouteLocatorImpl implements RouteLocator {
         if(route.isAuthorization()){
 
             booleanSpec.filters(f -> f.filters(fireBaseAuthFilterFactory.apply(
-                    config -> config.setEnable(true)
+                    config -> {if(route.isOnlyToken()) config.setOnlyToken(true);}
             )));
 
             //if target path has role, apply authMemberFilter

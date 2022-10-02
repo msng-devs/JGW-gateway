@@ -11,10 +11,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @ToString
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class JGWAuthResult {
+public class JGWAuthTinyResult {
 
     private boolean valid;
     private String uid;
-    private Integer roleID;
 
 }

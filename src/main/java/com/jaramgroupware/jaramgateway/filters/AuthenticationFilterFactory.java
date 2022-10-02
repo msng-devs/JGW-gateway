@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseToken;
 import com.jaramgroupware.jaramgateway.utils.ErrorResponseCreator;
 import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthClient;
 import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthResult;
+import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthTinyResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,7 +52,7 @@ public class AuthenticationFilterFactory implements GatewayFilterFactory<Authent
     @Validated
     public static class Config {
         @NotEmpty
-        private boolean isEnable;
+        private boolean isOnlyToken;
     }
 
     @Override
@@ -94,26 +95,55 @@ public class AuthenticationFilterFactory implements GatewayFilterFactory<Authent
             String tokenString = Objects.requireNonNull(token).get(0).substring(7);
 
             //get authResult
-            Mono<JGWAuthResult> authResult = jgwAuthClient.authentication(tokenString);
+            if(!config.isOnlyToken){
+                Mono<JGWAuthResult> authResult = jgwAuthClient.authentication(tokenString);
 
-            return authResult.flatMap(
-                    jgwAuthResult -> {
-                        //if not valid, reject
-                        if(jgwAuthResult.isValid())
-                            return errorResponseCreator.errorMessage(exchange,
-                                    "SECURITY_ERROR_INVALID_TOKEN",
-                                    HttpStatus.FORBIDDEN,
-                                    request.getURI().toString(),
-                                    "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+                return authResult.flatMap(
+                        jgwAuthResult -> {
+                            logger.debug("res {}",jgwAuthResult.toString());
+                            //if not valid, reject
+                            if(!jgwAuthResult.isValid())
+                                return errorResponseCreator.errorMessage(exchange,
+                                        "SECURITY_ERROR_INVALID_TOKEN",
+                                        HttpStatus.FORBIDDEN,
+                                        request.getURI().toString(),
+                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
 
-                        ServerHttpRequest newRequest = exchange.getRequest();
-                        newRequest = exchange.getRequest().mutate().header("user_uid", jgwAuthResult.getUid()).build();
-                        newRequest = exchange.getRequest().mutate().header("user_role_id", jgwAuthResult.getRoleID().toString()).build();
-                        newRequest = exchange.getRequest().mutate().header("user_role_name", jgwAuthResult.getRoleName()).build();
-                        logger.info("IP: {} Request: {} Token: {} AuthenticationFilter pass",request.getLocalAddress(),request.getURI(),token);
-                        return chain.filter(exchange.mutate().request(request).build());
-                    }
-            );
+                            ServerHttpRequest newRequest = exchange.getRequest();
+                            newRequest = exchange.getRequest()
+                                    .mutate()
+                                    .header("user_pk", jgwAuthResult.getUid())
+                                    .header("role_pk", jgwAuthResult.getRoleID().toString())
+                                    .build();
+
+                            logger.info("IP: {} Request: {} Token: {} AuthenticationFilter pass",request.getLocalAddress(),request.getURI(),token);
+                            return chain.filter(exchange.mutate().request(newRequest).build());
+                        }
+                );
+            }
+            else{
+                Mono<JGWAuthTinyResult> authResult = jgwAuthClient.tokenAuthentication(tokenString);
+
+                return authResult.flatMap(
+                        jgwAuthResult -> {
+                            //if not valid, reject
+                            if(!jgwAuthResult.isValid())
+                                return errorResponseCreator.errorMessage(exchange,
+                                        "SECURITY_ERROR_INVALID_TOKEN",
+                                        HttpStatus.FORBIDDEN,
+                                        request.getURI().toString(),
+                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+
+                            ServerHttpRequest newRequest = exchange.getRequest()
+                                    .mutate()
+                                    .header("user_pk", jgwAuthResult.getUid())
+                                    .build();
+
+                            logger.info("IP: {} Request: {} Token: {} AuthenticationFilter pass",request.getLocalAddress(),request.getURI(),token);
+                            return chain.filter(exchange.mutate().request(newRequest).build());
+                        }
+                );
+            }
 
 
         });

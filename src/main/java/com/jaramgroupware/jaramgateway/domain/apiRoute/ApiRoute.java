@@ -27,8 +27,8 @@ public class ApiRoute {
     @Column("API_ROUTE_GATEWAY_REFRESH")
     private boolean isGatewayRefresh;
 
-    @Column("API_ROUTE_ADD_USER_INFO")
-    private boolean isAddUserInfo;
+    @Column("API_ROUTE_ONLY_TOKEN")
+    private boolean isOnlyToken;
 
     @Column("API_ROUTE_AUTHORIZATION")
     private boolean isAuthorization;

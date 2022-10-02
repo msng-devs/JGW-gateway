@@ -67,17 +67,17 @@ public class AuthorizationFilterFactory implements GatewayFilterFactory<Authoriz
         return ((exchange, chain) -> {
 
             ServerHttpRequest request = exchange.getRequest();
-            String userUid = Objects.requireNonNull(request.getHeaders().get("user_uid")).get(0);
-            long userRole = Long.parseLong(Objects.requireNonNull(request.getHeaders().get("user_role_id")).get(0));
-
+            String userUid = Objects.requireNonNull(request.getHeaders().get("user_pk")).get(0);
+            long userRole = Long.parseLong(Objects.requireNonNull(request.getHeaders().get("role_pk")).get(0));
+            logger.debug("{}",request.getHeaders().toString());
             if (userRole < config.role)
                 return errorResponseCreator.errorMessage(exchange,
                         "SECURITY_ERROR_NOT_SUITABLE_ROLE",
                         HttpStatus.FORBIDDEN,
                         request.getURI().toString(),
                         "SECURITY_ERROR_NOT_SUITABLE_ROLE || (uid ="+userUid+") access. (request="+request.getURI()+")");
-            logger.info("IP: {} Request: {} Uid: {} member AuthorizationFilter.",request.getLocalAddress(),request.getURI(),userUid);
-            return chain.filter(exchange);
+            logger.info("IP: {} Request: {} Uid: {} Role: {} member AuthorizationFilter.",request.getLocalAddress(),request.getURI(),userUid,userRole);
+            return chain.filter(exchange.mutate().request(request).build());
 
 
         });
