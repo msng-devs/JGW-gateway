@@ -5,8 +5,9 @@ on:
     types: [closed]
 
 jobs:
+  jenkins:
     if: github.event.pull_request.merged == true
-    name: Build
+    name: Jenkins-action
     runs-on: ubuntu-latest
     steps:
       - name: trigger single Job
