@@ -11,8 +11,7 @@ RUN ./gradlew bootjar
 FROM openjdk:11
 COPY --from=builder build/libs/*.jar app.jar
 
-ARG EVN
-ENV SPRING_PROFILES_ACTIVE=${ENV}
+ARG ENV
 
 EXPOSE 50001
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active= ${ENV}","-jar","/app.jar"]
