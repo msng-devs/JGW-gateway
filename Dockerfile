@@ -12,6 +12,7 @@ FROM openjdk:11
 COPY --from=builder build/libs/*.jar app.jar
 
 ARG ENV
+ENV SPRING_PROFILES_ACTIVE=${ENV}
 
 EXPOSE 50001
-ENTRYPOINT ["java","-Dspring.profiles.active= ${ENV}","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
