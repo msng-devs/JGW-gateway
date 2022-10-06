@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-alpine as builder
+FROM openjdk:11 as builder
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle .
@@ -8,7 +8,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew bootjar
 
 
-FROM openjdk:11-jdk-alpine
+FROM openjdk:11
 COPY --from=builder build/libs/*.jar app.jar
 
 ARG EVN
