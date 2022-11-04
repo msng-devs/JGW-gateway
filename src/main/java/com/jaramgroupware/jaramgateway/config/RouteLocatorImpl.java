@@ -4,6 +4,7 @@ import com.jaramgroupware.jaramgateway.filters.*;
 import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.BooleanSpec;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Flux;
  * @version 1.0
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 public class RouteLocatorImpl implements RouteLocator {
 
@@ -45,6 +47,7 @@ public class RouteLocatorImpl implements RouteLocator {
     @Override
     public Flux<Route> getRoutes() {
         RouteLocatorBuilder.Builder routesBuilder = routeLocatorBuilder.routes();
+        log.info("find path (count = {}) ",apiRouteService.findAllRoute().count());
         return apiRouteService.findAllRoute()
                 .map(route -> routesBuilder.route(String.valueOf(route.getId()),
                         predicateSpec -> setPredicateSpec(route, predicateSpec)))
@@ -54,7 +57,7 @@ public class RouteLocatorImpl implements RouteLocator {
     }
 
     private Buildable<Route> setPredicateSpec(ApiRoute route, PredicateSpec predicateSpec) {
-
+        log.info("SERVICE = {} PATH ADD {} | {}",route.getService().getName(),route.getMethod().getName(),route.getPath());
         BooleanSpec booleanSpec = predicateSpec.path(route.getPath());
         booleanSpec.filters(f -> f.filters(requestLoggingFilterFactory.apply(
                 config -> {if(route.isOnlyToken()) config.setEnable(true);}

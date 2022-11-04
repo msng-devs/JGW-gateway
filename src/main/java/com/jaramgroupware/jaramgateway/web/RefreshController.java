@@ -9,9 +9,5 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestController
 public class RefreshController {
-    @GetMapping("/refresh")
-    public Mono<String> ping(@RequestHeader(name = "user_pk") String user,@RequestHeader(name = "role_pk") String role){
-        log.info("Dev (user = {}) refresh gateway!",user);
-        return Mono.just("refresh success!");
-    }
+
 }
