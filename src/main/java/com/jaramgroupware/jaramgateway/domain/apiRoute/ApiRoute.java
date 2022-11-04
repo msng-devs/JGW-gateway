@@ -33,6 +33,9 @@ public class ApiRoute {
     @Column("API_ROUTE_AUTHORIZATION")
     private boolean isAuthorization;
 
+    @Column("API_ROUTE_OPTIONAL")
+    private boolean isOptional;
+
     @Transient
     private Role role;
 
