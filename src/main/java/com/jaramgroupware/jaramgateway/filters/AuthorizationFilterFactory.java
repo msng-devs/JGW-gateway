@@ -34,11 +34,6 @@ public class AuthorizationFilterFactory implements GatewayFilterFactory<Authoriz
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ErrorResponseCreator errorResponseCreator;
 
-    /**
-     * AuthorizationFilter의 설정 클래스.
-     *
-     * role = 해당 path에 접근할 수 있는 최소 role
-     */
     @Getter
     @Setter
     @Validated
@@ -55,13 +50,6 @@ public class AuthorizationFilterFactory implements GatewayFilterFactory<Authoriz
         return new Config();
     }
 
-    /**
-     * AuthorizationFilter의 기능을 구현한 클래스,
-     *
-     *
-     * @param config
-     * @return
-     */
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {

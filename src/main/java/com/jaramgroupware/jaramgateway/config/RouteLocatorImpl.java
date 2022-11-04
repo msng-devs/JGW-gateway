@@ -1,8 +1,6 @@
 package com.jaramgroupware.jaramgateway.config;
 
-import com.jaramgroupware.jaramgateway.filters.AuthorizationFilterFactory;
-import com.jaramgroupware.jaramgateway.filters.AuthenticationFilterFactory;
-import com.jaramgroupware.jaramgateway.filters.GatewayRefreshFactory;
+import com.jaramgroupware.jaramgateway.filters.*;
 import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +36,12 @@ public class RouteLocatorImpl implements RouteLocator {
 
     private final GatewayRefreshFactory gatewayRefreshFactory;
 
-    /**
-     * 모든 API_ROUTE 를 찾아와 gateway의 route로 등록하는 클래스,
-     * ApiRouteService 클래스를 통해 모든 route 정보를 찾아오고, setPredicateSpec 클래스를 통해, path, filter, domain,service 등을 등록합니다.
-     * @return
-     */
+    private final CleanRequestFilterFactory cleanRequestFilterFactory;
+
+    private final RequestLoggingFilterFactory requestLoggingFilterFactory;
+
+    private final ResponseLoggingFilterFactory responseLoggingFilterFactory;
+
     @Override
     public Flux<Route> getRoutes() {
         RouteLocatorBuilder.Builder routesBuilder = routeLocatorBuilder.routes();
@@ -54,25 +53,15 @@ public class RouteLocatorImpl implements RouteLocator {
                         .getRoutes());
     }
 
-    /**
-     * route에 대한 정보를 바탕으로, path, filter, domain을 등록하는 클래스
-     *
-     * 아래와 같은 순서로 route에 정보를 등록합니다.
-     *
-     * 1. ApiRoute.path (API_ROUTE_PATH)에 대한 정보로 해당 route의 경로를 등록합니다.
-     * 2. ApiRoute.Role (ROLE_ROLE_PK)에 대한 정보를 확인하고, 만약 Role에 대한 정보가 있다면 아래 과정을 수행합니다.
-     *      2-1. fireBaseAuthFilter(firebase 인증 필터)를 등록합니다.
-     *      2-2. authMemberFilter(유저 인증 및 인가 필터)를 등록합니다. Config에 ApiRoute.Role.id를 등록하고,
-     *      만약 ApiRoute.isAddUserInfo (API_ROUTE_ADD_USER_INFO)가 true라면 (= request에 유저 정보를 등록하길 원함) config에 AddUserInfo를 활성화 시킵니다.,
-     * 3. ApiRoute.isGatewayRefresh (API_ROUTE_GATEWAY_REFRESH)가 true라면(= 해당 route를 처리할때 route 정보를 갱신하길 원함) gatewayRefresh 필터를 적용시킵니다.
-     *
-     * @param route
-     * @param predicateSpec
-     * @return
-     */
     private Buildable<Route> setPredicateSpec(ApiRoute route, PredicateSpec predicateSpec) {
 
         BooleanSpec booleanSpec = predicateSpec.path(route.getPath());
+        booleanSpec.filters(f -> f.filters(requestLoggingFilterFactory.apply(
+                config -> {if(route.isOnlyToken()) config.setEnable(true);}
+        )));
+        booleanSpec.filters(f -> f.filters(cleanRequestFilterFactory.apply(
+                config -> {if(route.isOnlyToken()) config.setIsEnable(true);}
+        )));
 
         //service name apply
         if (!StringUtils.isEmpty(route.getMethod().getName())) {
@@ -83,7 +72,10 @@ public class RouteLocatorImpl implements RouteLocator {
         if(route.isAuthorization()){
 
             booleanSpec.filters(f -> f.filters(fireBaseAuthFilterFactory.apply(
-                    config -> {if(route.isOnlyToken()) config.setOnlyToken(true);}
+                    config -> {
+                        if(route.isOnlyToken()) config.setOnlyToken(true);
+                        if(route.isOptional()) config.setOptional(true);
+                    }
             )));
 
             //if target path has role, apply authMemberFilter
