@@ -1,7 +1,5 @@
 package com.jaramgroupware.jaramgateway.utils;
 
-import com.jaramgroupware.jaramgateway.domain.Error.ErrorInfo;
-import com.jaramgroupware.jaramgateway.service.ErrorService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class ErrorResponseCreator {
 
-    private final ErrorService errorService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     //TODO HTTP code DB 연동으로 수정하기
@@ -38,19 +35,14 @@ public class ErrorResponseCreator {
         ServerHttpResponse serverHttpResponse = exchange.getResponse();
         serverHttpResponse.setStatusCode(status);
         serverHttpResponse.getHeaders().add("Content-Type","application/json");
+        String errorMessage = "{\"status\":\""+status+"\","
+                +"\"type\":\""+errorName+"\","
+                +"\"title\":\""+errorName+"\","
+                +"\"detail \":\""+logMessage+"\","
+                +"\"instance \":\""+instance +"\"}";
 
-        return errorService.findErrorByName(errorName)
-                .flatMap(errorInfo -> {
-                    String errorMessage = "{\"status\":\""+status+"\","
-                            +"\"type\":\""+errorInfo.getId()+"\","
-                            +"\"title\":\""+errorInfo.getName()+"\","
-                            +"\"detail \":\""+errorInfo.getIndex()+"\","
-                            +"\"instance \":\""+instance +"\"}";
-
-                    byte[] response =errorMessage.getBytes(StandardCharsets.UTF_8);
-                    DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(response);
-                    return exchange.getResponse().writeWith(Flux.just(buffer));
-                });
-
+        byte[] response =errorMessage.getBytes(StandardCharsets.UTF_8);
+        DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(response);
+        return exchange.getResponse().writeWith(Flux.just(buffer));
     }
 }
