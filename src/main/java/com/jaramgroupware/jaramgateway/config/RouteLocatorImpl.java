@@ -14,15 +14,7 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
-/**
- * 자람 그룹웨어의 Gateway의 route 등록 클래스입니다.
- * JGW database의 API_ROUTE 테이블에 있는 라우팅 정보들을 불러와 gateway의 route로 등록하고, 설정 정보에 따라 적절한 필터를 적용시킵니다.
- *
- * ref:https://medium.com/bliblidotcom-techblog/spring-cloud-gateway-dynamic-routes-from-database-dc938c6665de
- * @author hrabit64(37기 황준서)
- * @version 1.0
- * @since 1.0
- */
+
 @Slf4j
 @RequiredArgsConstructor
 public class RouteLocatorImpl implements RouteLocator {
