@@ -23,13 +23,10 @@ public class CorsConfig {
     private final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Content-Length, Authorization, credential, X-XSRF-TOKEN";
     private final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS, PATCH";
 
-    @Value("${jgw.cors.origin}")
-    private String origin;
-
     private final String MAX_AGE = "7200"; //2 hours (2 * 60 * 60)
 
     @Bean
-    public WebFilter corsFilter() {
+    public WebFilter corsFilter(@Value("${jgw.cors.origin}") String origin) {
         return (ServerWebExchange ctx, WebFilterChain chain) -> {
             ServerHttpRequest request = ctx.getRequest();
             if (CorsUtils.isCorsRequest(request)) {
