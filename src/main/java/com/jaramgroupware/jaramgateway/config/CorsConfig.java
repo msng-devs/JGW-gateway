@@ -29,9 +29,17 @@ public class CorsConfig {
     public WebFilter corsFilter() {
         return (ServerWebExchange ctx, WebFilterChain chain) -> {
             ServerHttpRequest request = ctx.getRequest();
+
             if (CorsUtils.isCorsRequest(request)) {
+
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
+
+                if (request.getHeaders().getOrigin() == null) {
+                    response.setStatusCode(HttpStatus.BAD_REQUEST);
+                    return Mono.empty();
+                }
+
                 headers.add("Access-Control-Allow-Origin", request.getHeaders().getOrigin());
                 headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
                 headers.add("Access-Control-Allow-Credentials", "true");
