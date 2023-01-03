@@ -1,5 +1,6 @@
 package com.jaramgroupware.jaramgateway.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ public class CorsConfig {
     private final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS, PATCH";
 
     @Value("${jgw.cors.origin}")
-    private String ALLOWED_ORIGIN;
+    private String origin;
 
     private final String MAX_AGE = "7200"; //2 hours (2 * 60 * 60)
 
@@ -34,7 +35,7 @@ public class CorsConfig {
             if (CorsUtils.isCorsRequest(request)) {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
-                headers.add("Access-Control-Allow-Origin", (Objects.requireNonNull(request.getHeaders().getOrigin()).isEmpty()) ?  ALLOWED_ORIGIN : request.getHeaders().getOrigin());
+                headers.add("Access-Control-Allow-Origin", (Objects.requireNonNull(request.getHeaders().getOrigin()).isEmpty()) ?  origin : request.getHeaders().getOrigin());
                 headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
                 headers.add("Access-Control-Allow-Credentials", "true");
                 headers.add("Access-Control-Max-Age", MAX_AGE);
