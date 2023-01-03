@@ -5,6 +5,7 @@ import com.jaramgroupware.jaramgateway.utils.jgwauth.exception.NotValidToken;
 import com.jaramgroupware.jaramgateway.utils.jgwauth.exception.ResponseErrorWithAuthServer;
 import io.netty.channel.ConnectTimeoutException;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
+@Setter
 @RequiredArgsConstructor
 @Component
 public class JGWAuthClient {
