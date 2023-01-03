@@ -26,13 +26,13 @@ public class CorsConfig {
     private final String MAX_AGE = "7200"; //2 hours (2 * 60 * 60)
 
     @Bean
-    public WebFilter corsFilter(@Value("${jgw.cors.origin}") String origin) {
+    public WebFilter corsFilter() {
         return (ServerWebExchange ctx, WebFilterChain chain) -> {
             ServerHttpRequest request = ctx.getRequest();
             if (CorsUtils.isCorsRequest(request)) {
                 ServerHttpResponse response = ctx.getResponse();
                 HttpHeaders headers = response.getHeaders();
-                headers.add("Access-Control-Allow-Origin", (Objects.requireNonNull(request.getHeaders().getOrigin()).isEmpty()) ?  origin : request.getHeaders().getOrigin());
+                headers.add("Access-Control-Allow-Origin", request.getHeaders().getOrigin());
                 headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
                 headers.add("Access-Control-Allow-Credentials", "true");
                 headers.add("Access-Control-Max-Age", MAX_AGE);
