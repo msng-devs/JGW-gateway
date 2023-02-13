@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.domain.service;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.method;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -10,19 +10,13 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "SERVICE")
-public class Service {
+@Table(name = "METHOD")
+public class Method {
 
     @Id
-    @Column("SERVICE_PK")
+    @Column("METHOD_PK")
     private Integer id;
 
-    @Column("SERVICE_NM")
+    @Column("METHOD_NM")
     private String name;
-
-    @Column("SERVICE_DOMAIN")
-    private String domain;
-
-    @Column("SERVICE_INDEX")
-    private String index;
 }

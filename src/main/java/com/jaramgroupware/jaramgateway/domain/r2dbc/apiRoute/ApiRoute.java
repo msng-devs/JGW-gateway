@@ -1,8 +1,9 @@
-package com.jaramgroupware.jaramgateway.domain.apiRoute;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.apiRoute;
 
-import com.jaramgroupware.jaramgateway.domain.method.Method;
-import com.jaramgroupware.jaramgateway.domain.role.Role;
-import com.jaramgroupware.jaramgateway.domain.service.Service;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.method.Method;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.role.Role;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.routeOption.RouteOption;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.service.ServiceInfo;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -24,25 +25,16 @@ public class ApiRoute {
     @Column("API_ROUTE_PATH")
     private String path;
 
-    @Column("API_ROUTE_GATEWAY_REFRESH")
-    private boolean isGatewayRefresh;
-
-    @Column("API_ROUTE_ONLY_TOKEN")
-    private boolean isOnlyToken;
-
-    @Column("API_ROUTE_AUTHORIZATION")
-    private boolean isAuthorization;
-
-    @Column("API_ROUTE_OPTIONAL")
-    private boolean isOptional;
-
     @Transient
     private Role role;
 
     @Transient
-    private Service service;
+    private ServiceInfo service;
 
     @Transient
     private Method method;
+
+    @Transient
+    private RouteOption routeOption;
 
 }

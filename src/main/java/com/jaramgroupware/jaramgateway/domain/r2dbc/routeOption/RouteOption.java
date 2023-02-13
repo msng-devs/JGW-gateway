@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.domain.method;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.routeOption;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -10,13 +10,14 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "METHOD")
-public class Method {
+@Table(name = "ROUTE_OPTION")
+public class RouteOption {
 
     @Id
-    @Column("METHOD_PK")
+    @Column("ROUTE_OPTION_PK")
     private Integer id;
 
-    @Column("METHOD_NM")
+    @Column("ROUTE_OPTION_NM")
     private String name;
+
 }

@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.domain.apiRoute;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.apiRoute;
 
 
 

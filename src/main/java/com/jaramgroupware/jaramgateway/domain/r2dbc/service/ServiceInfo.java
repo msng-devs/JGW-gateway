@@ -1,27 +1,28 @@
-package com.jaramgroupware.jaramgateway.domain.config;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.service;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-
 @Getter
 @ToString
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "CONFIG")
-public class Config {
+@Table(name = "SERVICE")
+public class ServiceInfo {
 
     @Id
-    @Column("CONFIG_PK")
+    @Column("SERVICE_PK")
     private Integer id;
 
-    @Column("CONFIG_NM")
+    @Column("SERVICE_NM")
     private String name;
 
-    @Column("CONFIG_VAL")
-    private String val;
+    @Column("SERVICE_DOMAIN")
+    private String domain;
 
+    @Column("SERVICE_INDEX")
+    private String index;
 }

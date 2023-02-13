@@ -1,9 +1,10 @@
-package com.jaramgroupware.jaramgateway.domain.apiRoute;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.apiRoute;
 
 
-import com.jaramgroupware.jaramgateway.domain.method.Method;
-import com.jaramgroupware.jaramgateway.domain.role.Role;
-import com.jaramgroupware.jaramgateway.domain.service.Service;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.method.Method;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.role.Role;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.routeOption.RouteOption;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.service.ServiceInfo;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import org.springframework.stereotype.Component;
@@ -19,15 +20,11 @@ public class ApiRouteMapper implements BiFunction<Row, RowMetadata, ApiRoute> {
         return ApiRoute.builder()
                 .id(row.get("API_ROUTE_PK",Integer.class))
                 .path(row.get("API_ROUTE_PATH",String.class))
-                .isGatewayRefresh(row.get("API_ROUTE_GATEWAY_REFRESH",boolean.class))
-                .isOnlyToken(row.get("API_ROUTE_ONLY_TOKEN",boolean.class))
-                .isAuthorization(row.get("API_ROUTE_AUTHORIZATION",boolean.class))
-                .isOptional(row.get("API_ROUTE_OPTIONAL",boolean.class))
                 .role(Role.builder()
                         .id(row.get("ROLE_PK",Integer.class))
                         .name(row.get("ROLE_NM",String.class))
                         .build())
-                .service(Service.builder()
+                .service(ServiceInfo.builder()
                         .id(row.get("SERVICE_PK",Integer.class))
                         .name(row.get("SERVICE_NM",String.class))
                         .domain(row.get("SERVICE_DOMAIN",String.class))
@@ -36,6 +33,10 @@ public class ApiRouteMapper implements BiFunction<Row, RowMetadata, ApiRoute> {
                 .method(Method.builder()
                         .id(row.get("METHOD_PK",Integer.class))
                         .name(row.get("METHOD_NM",String.class))
+                        .build())
+                .routeOption(RouteOption.builder()
+                        .id(row.get("ROUTE_OPTION_PK",Integer.class))
+                        .name(row.get("ROUTE_OPTION_NM",String.class))
                         .build())
                 .build();
 

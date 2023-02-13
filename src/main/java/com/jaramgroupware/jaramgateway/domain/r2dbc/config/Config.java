@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.domain.role;
+package com.jaramgroupware.jaramgateway.domain.r2dbc.config;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -11,15 +11,17 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "ROLE")
-public class Role {
+@Table(name = "CONFIG")
+public class Config {
 
     @Id
-    @Column("ROLE_PK")
+    @Column("CONFIG_PK")
     private Integer id;
 
-    @Column("ROLE_NM")
+    @Column("CONFIG_NM")
     private String name;
 
+    @Column("CONFIG_VAL")
+    private String val;
 
 }
