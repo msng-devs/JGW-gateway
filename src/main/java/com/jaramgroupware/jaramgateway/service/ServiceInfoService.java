@@ -30,4 +30,17 @@ public class ServiceInfoService {
                     .build());
         }).collectList();
     }
+
+    @Transactional(readOnly = true)
+    public Mono<ServiceInfoResponseDto> findServiceById(Integer id){
+        return serviceRepository.findServiceById(id)
+                .map(serviceInfo -> {
+                    return ServiceInfoResponseDto.builder()
+                            .name(serviceInfo.getName())
+                            .domain(serviceInfo.getDomain())
+                            .index(serviceInfo.getIndex())
+                            .id(serviceInfo.getId())
+                            .build();
+                });
+    }
 }

@@ -23,7 +23,7 @@ public class RoleService {
                 role -> {
                     return Mono.just(RoleResponseDto.builder()
                             .id(role.getId())
-                            .name(role.getName())
+                            .roleName(role.getName())
                             .build()
                     );
                 }).collectList();

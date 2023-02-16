@@ -5,5 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RouteOptionRepository extends ReactiveCrudRepository<RouteOption,Integer> {
+public interface RouteOptionRepository extends ReactiveCrudRepository<RouteOption,Integer>,RouteOptionCustomRepository {
 }

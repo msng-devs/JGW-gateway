@@ -34,7 +34,15 @@ public class ApiRouteService {
         Flux<ApiRoute> routes = routeRepository.findAllByServiceId(serviceId);
         return routes.flatMap(
                 route ->{
-                    return Mono.just(new RouteResponseDto(route));
+                    return Mono.just(
+                            RouteResponseDto.builder()
+                            .id(route.getId())
+                            .optionName(route.getRouteOption().getName())
+                            .methodName(route.getMethod().getName())
+                            .path(route.getPath())
+                            .roleName((route.getRole() != null)? route.getRole().getName() : null)
+                            .build()
+                    );
                 }
         ).collectList();
     }

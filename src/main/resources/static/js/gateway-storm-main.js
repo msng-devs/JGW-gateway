@@ -1,6 +1,10 @@
+var token = $("meta[name='_csrf']").attr("content");
+var header = $("meta[name='_csrf_header']").attr("content");
+
 var main = {
     init : function () {
         var _this = this;
+
         $('#btn-service-update').on('click', function () {
             _this.service_update();
         });
@@ -34,49 +38,25 @@ var main = {
         $('#btn-refresh').on('click', function () {
             _this.gateway_refresh();
         });
-        $('#btn-gateway-refresh').on('click', function () {
-            _this.firebase_login();
-        });
 
     },
     gateway_refresh : function (){
         $('#gateway-refresh-modal').modal('show');
     },
 
-    firebase_login : function () {
-        var data = {
-            email : $("#gateway-refresh-id").val(),
-            password : $("#gateway-refresh-pw").val(),
-            returnSecureToken: true
-        };
-        $.ajax({
-            type: 'POST',
-            url: "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="+$("#firebase-key").text(),
-            contentType:'application/json',
-            data: JSON.stringify(data)
-        }).done(function(data) {
-
-            var token = data.idToken
-            console.log(token)
-            start_refresh(token)
-        }).fail(function (error) {
-            console.log(error)
-            alert("email이나 비밀번호가 잘못되었습니다.");
-        });
-    },
-
     get_login : function () {
         var data = {
-            pw : $("#pw").val(),
-            id : $("#id").val()
+            password : $("#pw").val(),
+            username : $("#id").val()
         };
 
         $.ajax({
             type: 'POST',
             beforeSend: function(xhr){
                 xhr.withCredentials = true;
+                xhr.setRequestHeader(header, token);
             },
-            url: "/api/v1/auth",
+            url: "/login",
             dataType: 'json',
             contentType:'application/json; charset=utf-8',
             data: JSON.stringify(data)
@@ -92,8 +72,9 @@ var main = {
             type: 'DELETE',
             beforeSend: function(xhr){
                 xhr.withCredentials = true;
+                xhr.setRequestHeader(header, token);
             },
-            url: "/api/v1/auth",
+            url: "/logout",
             dataType: 'json',
             contentType:'application/json; charset=utf-8'
         }).done(function() {

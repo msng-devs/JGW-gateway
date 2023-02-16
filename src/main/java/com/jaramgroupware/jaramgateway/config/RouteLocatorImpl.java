@@ -49,7 +49,7 @@ public class RouteLocatorImpl implements RouteLocator {
     }
 
     private Buildable<Route> setPredicateSpec(ApiRoute route, PredicateSpec predicateSpec) {
-        log.info("+ SERVICE = {} Option = {} [{}] | {}",route.getService().getName(),route.getRouteOption().getName(),route.getMethod().getName(),route.getPath());
+        log.info("SERVICE = {} Option = {} [{}] | {}",route.getService().getName(),route.getRouteOption().getName(),route.getMethod().getName(),route.getPath());
 
         BooleanSpec booleanSpec = predicateSpec.path(route.getPath());
 
@@ -61,7 +61,6 @@ public class RouteLocatorImpl implements RouteLocator {
                 config -> {config.setIsEnable(true);}
         )));
 
-        //service name apply
         if (!StringUtils.isEmpty(route.getMethod().getName())) {
             booleanSpec.and()
                     .method(route.getMethod().getName());

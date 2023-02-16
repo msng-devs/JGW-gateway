@@ -9,5 +9,5 @@ import lombok.*;
 @Builder
 public class RoleResponseDto {
     private Integer id;
-    private String name;
+    private String roleName;
 }

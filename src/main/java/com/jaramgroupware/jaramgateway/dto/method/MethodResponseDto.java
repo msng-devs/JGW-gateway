@@ -9,5 +9,5 @@ import lombok.*;
 @Builder
 public class MethodResponseDto {
     private Integer id;
-    private String name;
+    private String methodName;
 }

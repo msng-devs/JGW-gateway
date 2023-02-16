@@ -24,7 +24,7 @@ public class MethodService {
                 method -> {
                     return Mono.just(MethodResponseDto.builder()
                                 .id(method.getId())
-                            .name(method.getName())
+                            .methodName(method.getName())
                             .build());
                 }).collectList();
     }
