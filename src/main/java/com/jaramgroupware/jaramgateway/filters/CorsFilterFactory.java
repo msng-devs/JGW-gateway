@@ -33,7 +33,7 @@ public class CorsFilterFactory {
             response.getHeaders().setAccessControlAllowOrigin(exchange.getRequest().getHeaders().getOrigin());
             response.getHeaders().setAccessControlAllowCredentials(true);
             response.getHeaders().setAccessControlAllowMethods(Arrays.asList(HttpMethod.GET, HttpMethod.POST,HttpMethod.DELETE,HttpMethod.PUT,HttpMethod.PATCH,HttpMethod.OPTIONS));
-            response.getHeaders().setAccessControlAllowHeaders(Arrays.asList("x-requested-with", "authorization", "Content-Type", "Content-Length", "Authorization", "credential", "X-XSRF-TOKEN"));
+            response.getHeaders().setAccessControlAllowHeaders(Arrays.asList("x-requested-with", "authorization", "Content-Type", "Content-Length", "Authorization", "credential", "X-XSRF-TOKEN","set-cookie","access-control-expose-headers"));
 
 
             return chain.filter(exchange.mutate().response(response).build());
