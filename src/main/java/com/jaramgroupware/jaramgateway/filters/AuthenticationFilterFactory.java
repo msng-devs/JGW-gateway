@@ -1,18 +1,14 @@
 package com.jaramgroupware.jaramgateway.filters;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
 import com.jaramgroupware.jaramgateway.utils.ErrorResponseCreator;
-import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthClient;
-import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthResult;
-import com.jaramgroupware.jaramgateway.utils.jgwauth.JGWAuthTinyResult;
+import com.jaramgroupware.jaramgateway.jgwauth.JGWAuthClient;
+import com.jaramgroupware.jaramgateway.jgwauth.JGWAuthResult;
+import com.jaramgroupware.jaramgateway.jgwauth.JGWAuthTokenResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
 import org.springframework.http.HttpStatus;
@@ -76,13 +72,13 @@ public class AuthenticationFilterFactory implements GatewayFilterFactory<Authent
                 return authResult.flatMap(
                         jgwAuthResult -> {
                             logger.debug("res {}",jgwAuthResult.toString());
-                            //if not valid, reject
+                            //if not isValid, reject
                             if(!jgwAuthResult.isValid() && !config.isOptional())
                                 return errorResponseCreator.errorMessage(exchange,
                                         "SECURITY_ERROR_INVALID_TOKEN",
                                         HttpStatus.FORBIDDEN,
                                         request.getURI().toString(),
-                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not isValid token  (request="+request.getURI()+")");
                             //if optional,
                             else if(!jgwAuthResult.isValid() && config.isOptional()){
                                 ServerHttpRequest newRequest = exchange.getRequest()
@@ -108,17 +104,17 @@ public class AuthenticationFilterFactory implements GatewayFilterFactory<Authent
                 );
             }
             else{
-                Mono<JGWAuthTinyResult> authResult = jgwAuthClient.tokenAuthentication(tokenString);
+                Mono<JGWAuthTokenResult> authResult = jgwAuthClient.tokenAuthentication(tokenString);
 
                 return authResult.flatMap(
                         jgwAuthResult -> {
-                            //if not valid, reject
+                            //if not isValid, reject
                             if(!jgwAuthResult.isValid())
                                 return errorResponseCreator.errorMessage(exchange,
                                         "SECURITY_ERROR_INVALID_TOKEN",
                                         HttpStatus.FORBIDDEN,
                                         request.getURI().toString(),
-                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not valid token  (request="+request.getURI()+")");
+                                        "SECURITY_ERROR_INVALID_TOKEN || get (token= "+token+" ) but this is not isValid token  (request="+request.getURI()+")");
 
                             ServerHttpRequest newRequest = exchange.getRequest()
                                     .mutate()

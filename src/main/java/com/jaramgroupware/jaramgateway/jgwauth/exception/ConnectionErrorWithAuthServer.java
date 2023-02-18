@@ -1,6 +1,5 @@
-package com.jaramgroupware.jaramgateway.utils.jgwauth.exception;
+package com.jaramgroupware.jaramgateway.jgwauth.exception;
 
-import com.google.firebase.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.jaramgroupware.jaramgateway.utils.jgwauth.exception;
+package com.jaramgroupware.jaramgateway.jgwauth.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
