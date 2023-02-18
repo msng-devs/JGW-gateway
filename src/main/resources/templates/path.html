@@ -1,0 +1,213 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
+<!--    <title>Gateway-Storm services</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-night.min.css" rel="stylesheet">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">-->
+<!--       <nav class="navbar navbar-light bg-light p-3 m-3">-->
+<!--          <form class="form-inline">-->
+<!--            <button class="btn btn-outline-secondary" type="button" id="btn-logout">logout</button>-->
+<!--            <button class="btn btn-outline-success" type="button" id="btn-refresh">Refresh Gateway</button>-->
+<!--          </form>-->
+<!--       </nav>-->
+<!--    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>-->
+<!--    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--    <div class="container-fluid m-5 p-5">-->
+
+<!--        <div class="row">-->
+<!--            <div class="col-md-12 text-center">-->
+<!--                <div class="jumbotron m-5 py-3">-->
+<!--                    <h2 class="my-3">-->
+<!--                        <i class="fa-solid fa-route"></i> Route 목록 in <b class="text-primary">${serviceName}</b>-->
+<!--                    </h2>-->
+<!--                    <a id="service-id" style="display: none">${serviceId}</a>-->
+<!--                    <p class="my-3 text-success">-->
+<!--                        <b class="text-primary">${serviceName}</b> 서비스에 등록되어있는 Route 목록입니다.-->
+<!--                    </p>-->
+<!--                    <p class="text-muted">-->
+<!--                        <i class="fa-solid fa-question"></i> 사용 가이드-->
+<!--                    </p>-->
+
+<!--                </div>-->
+<!--                <div class="col-md-12 text-center">-->
+<!--                    <button type="submit" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-path">-->
+<!--                                <i class="fa-solid fa-plus"></i> 신규 추가-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--                <div class="row m-5 p-2">-->
+<!--                    <div class="col-md-2">-->
+<!--                    </div>-->
+<!--                    <div class="col-md-8">-->
+<!--                        <table class="table">-->
+<!--                          <thead>-->
+<!--                            <tr>-->
+<!--                                <th scope="col">메소드</th>-->
+<!--                                <th scope="col">Path</th>-->
+<!--                                <th scope="col">Option</th>-->
+<!--                                <th scope="col">Role</th>-->
+<!--                                <th scope="col"></th>-->
+<!--                            </tr>-->
+<!--                          </thead>-->
+<!--                          <tbody>-->
+<!--                            <th:block th:each="path : ${paths}">-->
+<!--                                <tr th:id="${path.getId()}">-->
+<!--                                    <th scope="row">[[${path.getMethodName()}]]</th>-->
+<!--                                    <td>[[${path.getPath()}]]</td>-->
+<!--                                    <td>[[${path.getOptionName()}]]</td>-->
+<!--                                    <td th:if="${path.getRoleName() != null}">[[${path.getRoleName()}]]</td>-->
+<!--                                    <td th:if="${path.getRoleName() == null}">-</td>-->
+<!--                                    <td><a class="icon-block"><i class="fa-solid fa-pen-to-square" onclick="path_update_modal([[${path.getId()}]])"></i></a></td>-->
+<!--                                </tr>-->
+<!--                            </th:block>-->
+<!--                          </tbody>-->
+<!--                        </table>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-2">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--&lt;!&ndash;    add path modal&ndash;&gt;-->
+<!--    <div class="modal fade" id="add-path" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title">신규 path</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <form>-->
+
+<!--                        <div class="form-group">-->
+<!--                            <label class="my-3" for="add-path-method">Method</label>-->
+<!--                            <select class="form-control" id="add-path-method">-->
+<!--                                <th:block th:each = "method : ${methods}">-->
+<!--                                    <option th:value="${method.getId()}">[[${method.getMethodName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+
+<!--                            <label class="my-3" for="add-path-path">Path</label>-->
+<!--                            <input class="form-control" id="add-path-path">-->
+
+<!--                            <label class="my-3" for="add-path-option">Option</label>-->
+<!--                            <select class="form-control" id="add-path-option">-->
+<!--                                <th:block th:each = "option : ${options}">-->
+<!--                                    <option th:value="${option.getOptionName()}">[[${option.getOptionName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+
+<!--                            <label id="add-path-role-label" class="my-3" for="add-path-role" style="display: none">Role</label>-->
+<!--                            <select class="form-control" id="add-path-role" style="display: none">-->
+<!--                                <th:block th:each = "role : ${roles}">-->
+<!--                                    <option th:value="${role.getId()}">[[${role.getRoleName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <hr class="my-3">-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                    <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal" id="btn-path-add">등록</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--&lt;!&ndash;    update path modal&ndash;&gt;-->
+<!--    <div class="modal fade" id="update-path" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title">신규 path</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <form>-->
+
+<!--                        <div class="form-group">-->
+<!--                            <label class="my-3" for="update-path-method">Method</label>-->
+<!--                            <select class="form-control" id="update-path-method">-->
+<!--                                <th:block th:each = "method : ${methods}">-->
+<!--                                    <option th:value="${method.getId()}">[[${method.getMethodName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+
+<!--                            <label class="my-3" for="update-path-path">Path</label>-->
+<!--                            <input class="form-control" id="update-path-path">-->
+
+<!--                            <label class="my-3" for="add-path-option">Option</label>-->
+<!--                            <select class="form-control" id="update-path-option">-->
+<!--                                <th:block th:each = "option : ${options}">-->
+<!--                                    <option th:value="${option.getOptionName()}">[[${option.getOptionName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+
+<!--                            <label id="update-path-role-label" class="my-3" for="update-path-role" style="display: none">Role</label>-->
+<!--                            <select class="form-control" id="update-path-role" style="display: none">-->
+<!--                                <th:block th:each = "role : ${roles}">-->
+<!--                                    <option th:value="${role.getId()}">[[${role.getRoleName()}]]</option>-->
+<!--                                </th:block>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <hr class="my-3">-->
+<!--                    </form>-->
+<!--                    <a id="update-path-id" style="display: none"></a>-->
+<!--                </div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                    <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal" id="btn-path-update">등록</button>-->
+<!--                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" id="btn-path-check-rm">삭제</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash;    delete path &ndash;&gt;-->
+<!--    <div class="modal fade" id="delete-path" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog modal-xl">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title">정말로 삭제 하시겠습니까?</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <a id="rm-path-index">path 삭제 후 해당 정보를 다시 복구할 수 없습니다. 영구적으로 삭제하시겠습니까?</a>-->
+<!--                    <a id="rm-path-id" style="display: none"></a>-->
+<!--                </div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                    <button type="button" class="btn btn-outline-danger" id="btn-path-rm">삭제</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash; gateway refresh &ndash;&gt;-->
+<!--    <div class="modal fade" id="gateway-refresh-modal" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title">Gateway refresh</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+<!--                    <a>경고! 해당 기능을 사용하면, 일시적으로 gateway 서비스가 중단됩니다! (즉 일시적으로 모든 서비스가 중단됩니다.) test 환경이 아니라면, 주의하여 사용하세요.</a>-->
+<!--                </div>-->
+<!--                <div class="modal-footer">-->
+<!--                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal" id="btn-gateway-refresh">진행하기</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>-->
+<!--    <script th:src = "@{/js/gateway-storm-main.js}"></script>-->
+<!--</body>-->
+<!--</html>-->

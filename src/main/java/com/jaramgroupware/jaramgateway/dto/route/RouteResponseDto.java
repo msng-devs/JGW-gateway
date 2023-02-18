@@ -2,40 +2,29 @@ package com.jaramgroupware.jaramgateway.dto.route;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.jaramgroupware.jaramgateway.domain.apiRoute.ApiRoute;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.jaramgroupware.jaramgateway.domain.r2dbc.apiRoute.ApiRoute;
+import lombok.*;
 
-
-
+@Builder
 @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
 @Getter
-@NoArgsConstructor
+@Setter
+@AllArgsConstructor
 public class RouteResponseDto {
 
     private Integer id;
     private String path;
-    private String role;
-    private String  service;
-    private String  method;
+    private String roleName;
+    private String optionName;
+    private String methodName;
 
-    @Builder
-    public RouteResponseDto(Integer id, String path, String  role, String  service, String  method) {
-        this.id = id;
-        this.path = path;
-        this.role = role;
-        this.service = service;
-        this.method = method;
-    }
 
     public RouteResponseDto(ApiRoute route){
         this.id = route.getId();
         this.path = route.getPath();
-        this.role = route.getRole().getName();
-        this.service = route.getService().getName();
-        this.method = route.getMethod().getName();
+        this.roleName = (route.getRole() != null)? route.getRole().getName() : null;
+        this.optionName = route.getRouteOption().getName();
+        this.methodName = route.getMethod().getName();
     }
 }
