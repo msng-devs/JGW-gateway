@@ -25,8 +25,7 @@ public class JGWAuthClient {
     public Mono<JGWAuthResult> authentication(String token){
         Mono<JGWAuthResult> result;
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(authApiUrl+"/checkAccessToken")
+                .uri(authApiUrl+"/checkAccessToken",uriBuilder -> uriBuilder
                         .queryParam("accessToken", token)
                         .build())
                 .retrieve()
@@ -57,8 +56,7 @@ public class JGWAuthClient {
     public Mono<JGWAuthTokenResult> tokenAuthentication(String token){
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(authApiUrl+"/checkIdToken")
+                .uri(authApiUrl+"/checkIdToken",uriBuilder -> uriBuilder
                         .queryParam("idToken", token)
                         .build())
                 .retrieve()
