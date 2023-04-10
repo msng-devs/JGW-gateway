@@ -25,6 +25,9 @@ public class ApiRoute {
     @Column("API_ROUTE_PATH")
     private String path;
 
+    @Column("PATH_VARIABLE")
+    private String pathVariable;
+
     @Transient
     private Role role;
 

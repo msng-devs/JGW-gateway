@@ -5,6 +5,7 @@ import com.jaramgroupware.jaramgateway.domain.r2dbc.apiRoute.ApiRoute;
 import com.jaramgroupware.jaramgateway.service.ApiRouteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.gateway.filter.factory.SetPathGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.BooleanSpec;
@@ -31,7 +32,7 @@ public class RouteLocatorImpl implements RouteLocator {
     private final GatewayRefreshFactory gatewayRefreshFactory;
 
     private final CleanRequestFilterFactory cleanRequestFilterFactory;
-
+    private final SetPathGatewayFilterFactory setPathGatewayFilterFactory;
     private final RequestLoggingFilterFactory requestLoggingFilterFactory;
 
     private final ResponseLoggingFilterFactory responseLoggingFilterFactory;
@@ -121,7 +122,29 @@ public class RouteLocatorImpl implements RouteLocator {
                 break;
         }
 
+        if(route.getPathVariable() != null){
+            String[] routePaths = route.getPathVariable().split(";");
+            int routePathIndex = 0;
 
+            StringBuilder newUrl = new StringBuilder();
+
+            for (String path:route.getPath().split("/")){
+                newUrl.append("/");
+                if(path.startsWith("{")){
+                    newUrl.append(routePaths[routePathIndex]);
+                    routePathIndex++;
+                }
+                else{
+                    newUrl.append(path);
+                }
+            }
+            newUrl.append("/**");
+            booleanSpec.filters(f -> f.filters(setPathGatewayFilterFactory.apply(
+                    config -> {
+                        config.setTemplate(newUrl.toString());
+                    }
+            )));
+        }
         //set domain and return route
         return booleanSpec.uri(route.getService().getDomain());
     }
