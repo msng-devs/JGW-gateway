@@ -25,4 +25,6 @@ public class ServiceInfo {
 
     @Column("SERVICE_INDEX")
     private String index;
+
+
 }
